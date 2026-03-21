@@ -1,4 +1,3 @@
-cat > /mnt/user-data/outputs/app.py << 'ENDOFFILE'
 from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
 import yfinance as yf
@@ -185,5 +184,3 @@ def analyze(ticker):
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=10000)
-ENDOFFILE
-echo "Done"
