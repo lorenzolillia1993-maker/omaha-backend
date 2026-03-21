@@ -1,9 +1,9 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
 import yfinance as yf
 import requests
 import os
-from flask import render_template
+import json
 
 app = Flask(__name__)
 CORS(app)
@@ -30,7 +30,49 @@ def home():
 def serve_app():
     return render_template('index.html')
 
-@app.route('/analyze/<ticker>')
+@app.route('/screener')
+def screener():
+    stocks = [
+        {"ticker":"AAPL","name":"Apple Inc.","sector":"Technology","market":"NASDAQ"},
+        {"ticker":"MSFT","name":"Microsoft Corp.","sector":"Technology","market":"NASDAQ"},
+        {"ticker":"GOOGL","name":"Alphabet Inc.","sector":"Technology","market":"NASDAQ"},
+        {"ticker":"AMZN","name":"Amazon.com Inc.","sector":"Consumer","market":"NASDAQ"},
+        {"ticker":"NVDA","name":"NVIDIA Corp.","sector":"Technology","market":"NASDAQ"},
+        {"ticker":"META","name":"Meta Platforms","sector":"Technology","market":"NASDAQ"},
+        {"ticker":"TSLA","name":"Tesla Inc.","sector":"Auto","market":"NASDAQ"},
+        {"ticker":"AMD","name":"Advanced Micro Devices","sector":"Technology","market":"NASDAQ"},
+        {"ticker":"INTC","name":"Intel Corp.","sector":"Technology","market":"NASDAQ"},
+        {"ticker":"NFLX","name":"Netflix Inc.","sector":"Technology","market":"NASDAQ"},
+        {"ticker":"JPM","name":"JPMorgan Chase","sector":"Finance","market":"NYSE"},
+        {"ticker":"GS","name":"Goldman Sachs","sector":"Finance","market":"NYSE"},
+        {"ticker":"BAC","name":"Bank of America","sector":"Finance","market":"NYSE"},
+        {"ticker":"V","name":"Visa Inc.","sector":"Finance","market":"NYSE"},
+        {"ticker":"MA","name":"Mastercard Inc.","sector":"Finance","market":"NYSE"},
+        {"ticker":"KO","name":"Coca-Cola Co.","sector":"Consumer","market":"NYSE"},
+        {"ticker":"PEP","name":"PepsiCo Inc.","sector":"Consumer","market":"NASDAQ"},
+        {"ticker":"MCD","name":"McDonald's Corp.","sector":"Consumer","market":"NYSE"},
+        {"ticker":"NKE","name":"Nike Inc.","sector":"Consumer","market":"NYSE"},
+        {"ticker":"WMT","name":"Walmart Inc.","sector":"Consumer","market":"NYSE"},
+        {"ticker":"JNJ","name":"Johnson & Johnson","sector":"Healthcare","market":"NYSE"},
+        {"ticker":"PFE","name":"Pfizer Inc.","sector":"Healthcare","market":"NYSE"},
+        {"ticker":"XOM","name":"ExxonMobil Corp.","sector":"Energy","market":"NYSE"},
+        {"ticker":"CVX","name":"Chevron Corp.","sector":"Energy","market":"NYSE"},
+        {"ticker":"ENI.MI","name":"ENI SpA","sector":"Energy","market":"MIL"},
+        {"ticker":"ENEL.MI","name":"Enel SpA","sector":"Utilities","market":"MIL"},
+        {"ticker":"ISP.MI","name":"Intesa Sanpaolo","sector":"Finance","market":"MIL"},
+        {"ticker":"UCG.MI","name":"UniCredit SpA","sector":"Finance","market":"MIL"},
+        {"ticker":"RACE.MI","name":"Ferrari NV","sector":"Auto","market":"MIL"},
+        {"ticker":"STM.MI","name":"STMicroelectronics","sector":"Technology","market":"MIL"},
+        {"ticker":"G.MI","name":"Generali Assicurazioni","sector":"Finance","market":"MIL"},
+        {"ticker":"TIT.MI","name":"Telecom Italia","sector":"Telecom","market":"MIL"},
+        {"ticker":"LDO.MI","name":"Leonardo SpA","sector":"Defense","market":"MIL"},
+        {"ticker":"MONC.MI","name":"Moncler SpA","sector":"Luxury","market":"MIL"},
+        {"ticker":"TRN.MI","name":"Terna SpA","sector":"Utilities","market":"MIL"},
+        {"ticker":"SRG.MI","name":"Snam SpA","sector":"Energy","market":"MIL"},
+        {"ticker":"BAMI.MI","name":"Banco BPM","sector":"Finance","market":"MIL"},
+    ]
+    return jsonify(stocks)
+    @app.route('/analyze/<ticker>')
 def analyze(ticker):
     try:
         t = yf.Ticker(ticker)
@@ -44,7 +86,8 @@ def analyze(ticker):
             price = float(hist2['Close'].iloc[-1])
             change = price - prev
             quote = {
-                "price": round(price,2), "change": round(change,2),
+                "price": round(price,2),
+                "change": round(change,2),
                 "changePct": round((change/prev)*100,2),
                 "volume": int(hist2['Volume'].iloc[-1]),
                 "high": round(float(hist2['High'].iloc[-1]),2),
@@ -118,27 +161,26 @@ def analyze(ticker):
         if inc_list:
             fin_summary = "\n".join([f"{r['year']}: Ricavi {r['revenue']}, Utile {r['netIncome']}, Margine {r['margin']}%" for r in inc_list])
         if div_list:
-            fin_summary += f"\nDividendi recenti: {', '.join([f\"{d['date'][:7]} ${d['amount']}\" for d in div_list[:4]])}"
+            fin_summary += f"\nDividendi: {', '.join([f\"{d['date'][:7]} ${d['amount']}\" for d in div_list[:4]])}"
 
         tech_prompt = f"""Sei un analista tecnico senior. Analizza {ticker} ({fund['name']}).
-Dati reali: Prezzo ${quote['price'] if quote else 'N/D'}, RSI={tech['rsi'] if tech else 'N/D'}, MACD={tech['macd'] if tech else 'N/D'}, SMA50={tech['sma50'] if tech else 'N/D'}, SMA200={tech['sma200'] if tech else 'N/D'}, BB_upper={tech['bb_upper'] if tech else 'N/D'}, BB_lower={tech['bb_lower'] if tech else 'N/D'}, Max52w={tech['high52w'] if tech else 'N/D'}, Min52w={tech['low52w'] if tech else 'N/D'}
-Rispondi SOLO JSON valido: {{"score":7,"trend":"RIALZISTA","forza":"FORTE","segnale":"COMPRA","supporto":"livello","resistenza":"livello","analisi":"180 parole italiano","punti_forza":["p1","p2","p3"],"punti_debolezza":["p1","p2"]}}"""
+Prezzo=${quote['price'] if quote else 'N/D'}, RSI={tech['rsi'] if tech else 'N/D'}, MACD={tech['macd'] if tech else 'N/D'}, SMA50={tech['sma50'] if tech else 'N/D'}, SMA200={tech['sma200'] if tech else 'N/D'}, BB_upper={tech['bb_upper'] if tech else 'N/D'}, BB_lower={tech['bb_lower'] if tech else 'N/D'}, Max52w={tech['high52w'] if tech else 'N/D'}, Min52w={tech['low52w'] if tech else 'N/D'}
+Rispondi SOLO JSON: {{"score":7,"trend":"RIALZISTA","forza":"FORTE","segnale":"COMPRA","supporto":"livello","resistenza":"livello","analisi":"180 parole italiano","punti_forza":["p1","p2","p3"],"punti_debolezza":["p1","p2"]}}"""
 
         fund_prompt = f"""Sei un analista fondamentale senior. Analizza {ticker} ({fund['name']}).
-Settore: {fund['sector']}. PE={fund['pe']}, ROE={fund['roe']}, Margine={fund['profitMargins']}, D/E={fund['debtToEquity']}, DivYield={fund['dividendYield']}
-Bilanci 5 anni: {fin_summary}
-Rispondi SOLO JSON valido: {{"score":7,"valutazione":"SOTTOVALUTATA","moat":"AMPIO","qualita":"BUONA","segnale":"COMPRA","analisi":"180 parole italiano","punti_forza":["p1","p2","p3"],"punti_debolezza":["p1","p2"],"prev_breve":"testo","prev_medio":"testo","prev_lungo":"testo"}}"""
+Settore={fund['sector']}, PE={fund['pe']}, ROE={fund['roe']}, Margine={fund['profitMargins']}, D/E={fund['debtToEquity']}, DivYield={fund['dividendYield']}
+Bilanci: {fin_summary}
+Rispondi SOLO JSON: {{"score":7,"valutazione":"SOTTOVALUTATA","moat":"AMPIO","qualita":"BUONA","segnale":"COMPRA","analisi":"180 parole italiano","punti_forza":["p1","p2","p3"],"punti_debolezza":["p1","p2"],"prev_breve":"testo","prev_medio":"testo","prev_lungo":"testo"}}"""
 
-        import json
-        tech_ai = json.loads(ask_gemini("Sei un analista tecnico. Rispondi SOLO JSON.", tech_prompt))
-        fund_ai = json.loads(ask_gemini("Sei un analista fondamentale. Rispondi SOLO JSON.", fund_prompt))
+        tech_ai = json.loads(ask_gemini("Sei un analista tecnico. Rispondi SOLO JSON valido.", tech_prompt))
+        fund_ai = json.loads(ask_gemini("Sei un analista fondamentale. Rispondi SOLO JSON valido.", fund_prompt))
 
         arb_prompt = f"""Sei l arbitro di un sistema multi-agente. Analizza {ticker}.
 TECNICO score={tech_ai['score']}, segnale={tech_ai['segnale']}, analisi={tech_ai['analisi']}
 FONDAMENTALE score={fund_ai['score']}, segnale={fund_ai['segnale']}, analisi={fund_ai['analisi']}
-Rispondi SOLO JSON valido: {{"score_finale":7,"verdetto":"COMPRA","confidenza":"ALTA","rischio":"MEDIO","orizzonte":"MEDIO (6-12 mesi)","target_upside":"+15%","accordo":"CONCORDANO","sintesi":"220 parole italiano","previsione":"100 parole italiano","catalyst_pos":["c1","c2"],"catalyst_neg":["r1","r2"]}}"""
+Rispondi SOLO JSON: {{"score_finale":7,"verdetto":"COMPRA","confidenza":"ALTA","rischio":"MEDIO","orizzonte":"MEDIO (6-12 mesi)","target_upside":"+15%","accordo":"CONCORDANO","sintesi":"220 parole italiano","previsione":"100 parole italiano","catalyst_pos":["c1","c2"],"catalyst_neg":["r1","r2"]}}"""
 
-        arb_ai = json.loads(ask_gemini("Sei un arbitro finanziario. Rispondi SOLO JSON.", arb_prompt))
+        arb_ai = json.loads(ask_gemini("Sei un arbitro finanziario. Rispondi SOLO JSON valido.", arb_prompt))
 
         return jsonify({
             "ticker": ticker.upper(),
@@ -152,49 +194,6 @@ Rispondi SOLO JSON valido: {{"score_finale":7,"verdetto":"COMPRA","confidenza":"
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-@app.route('/screener')
-def screener():
-    stocks = [
-        {"ticker":"AAPL","name":"Apple Inc.","sector":"Technology","market":"NASDAQ"},
-        {"ticker":"MSFT","name":"Microsoft Corp.","sector":"Technology","market":"NASDAQ"},
-        {"ticker":"GOOGL","name":"Alphabet Inc.","sector":"Technology","market":"NASDAQ"},
-        {"ticker":"AMZN","name":"Amazon.com Inc.","sector":"Consumer","market":"NASDAQ"},
-        {"ticker":"NVDA","name":"NVIDIA Corp.","sector":"Technology","market":"NASDAQ"},
-        {"ticker":"META","name":"Meta Platforms","sector":"Technology","market":"NASDAQ"},
-        {"ticker":"TSLA","name":"Tesla Inc.","sector":"Auto","market":"NASDAQ"},
-        {"ticker":"AMD","name":"Advanced Micro Devices","sector":"Technology","market":"NASDAQ"},
-        {"ticker":"INTC","name":"Intel Corp.","sector":"Technology","market":"NASDAQ"},
-        {"ticker":"NFLX","name":"Netflix Inc.","sector":"Technology","market":"NASDAQ"},
-        {"ticker":"JPM","name":"JPMorgan Chase","sector":"Finance","market":"NYSE"},
-        {"ticker":"GS","name":"Goldman Sachs","sector":"Finance","market":"NYSE"},
-        {"ticker":"BAC","name":"Bank of America","sector":"Finance","market":"NYSE"},
-        {"ticker":"V","name":"Visa Inc.","sector":"Finance","market":"NYSE"},
-        {"ticker":"MA","name":"Mastercard Inc.","sector":"Finance","market":"NYSE"},
-        {"ticker":"KO","name":"Coca-Cola Co.","sector":"Consumer","market":"NYSE"},
-        {"ticker":"PEP","name":"PepsiCo Inc.","sector":"Consumer","market":"NASDAQ"},
-        {"ticker":"MCD","name":"McDonald's Corp.","sector":"Consumer","market":"NYSE"},
-        {"ticker":"NKE","name":"Nike Inc.","sector":"Consumer","market":"NYSE"},
-        {"ticker":"WMT","name":"Walmart Inc.","sector":"Consumer","market":"NYSE"},
-        {"ticker":"JNJ","name":"Johnson & Johnson","sector":"Healthcare","market":"NYSE"},
-        {"ticker":"PFE","name":"Pfizer Inc.","sector":"Healthcare","market":"NYSE"},
-        {"ticker":"XOM","name":"ExxonMobil Corp.","sector":"Energy","market":"NYSE"},
-        {"ticker":"CVX","name":"Chevron Corp.","sector":"Energy","market":"NYSE"},
-        {"ticker":"ENI.MI","name":"ENI SpA","sector":"Energy","market":"MIL"},
-        {"ticker":"ENEL.MI","name":"Enel SpA","sector":"Utilities","market":"MIL"},
-        {"ticker":"ISP.MI","name":"Intesa Sanpaolo","sector":"Finance","market":"MIL"},
-        {"ticker":"UCG.MI","name":"UniCredit SpA","sector":"Finance","market":"MIL"},
-        {"ticker":"RACE.MI","name":"Ferrari NV","sector":"Auto","market":"MIL"},
-        {"ticker":"STM.MI","name":"STMicroelectronics","sector":"Technology","market":"MIL"},
-        {"ticker":"G.MI","name":"Generali Assicurazioni","sector":"Finance","market":"MIL"},
-        {"ticker":"TIT.MI","name":"Telecom Italia","sector":"Telecom","market":"MIL"},
-        {"ticker":"LDO.MI","name":"Leonardo SpA","sector":"Defense","market":"MIL"},
-        {"ticker":"MONC.MI","name":"Moncler SpA","sector":"Luxury","market":"MIL"},
-        {"ticker":"TRN.MI","name":"Terna SpA","sector":"Utilities","market":"MIL"},
-        {"ticker":"SRG.MI","name":"Snam SpA","sector":"Energy","market":"MIL"},
-        {"ticker":"BAMI.MI","name":"Banco BPM","sector":"Finance","market":"MIL"},
-    ]
-    return jsonify(stocks)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=10000)
