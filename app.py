@@ -7,141 +7,144 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-ANTHROPIC_API_KEY = os.environ.get('ANTHROPIC_API_KEY', '')
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
+
+def ask_gemini(system, user):
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+    body = {
+        "contents": [{"role": "user", "parts": [{"text": f"{system}\n\n{user}"}]}],
+        "generationConfig": {"temperature": 0.7, "maxOutputTokens": 1500}
+    }
+    r = requests.post(url, json=body, timeout=60)
+    data = r.json()
+    text = data['candidates'][0]['content']['parts'][0]['text']
+    text = text.replace('```json','').replace('```','').strip()
+    return text
 
 @app.route('/')
 def home():
-    return jsonify({"status": "OMAHA
-              @app.route('/claude', methods=['POST'])
-def claude_proxy():
-    try:
-        data = request.json
-        headers = {
-            "Content-Type": "application/json",
-            "x-api-key": ANTHROPIC_API_KEY,
-            "anthropic-version": "2023-06-01"
-        }
-        r = requests.post(
-            "https://api.anthropic.com/v1/messages",
-            json=data,
-            headers=headers,
-            timeout=60
-        )
-        return jsonify(r.json())
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-      @app.route('/quote/<ticker>')
-def quote(ticker):
-    try:
-        t = yf.Ticker(ticker)
-        hist = t.history(period="2d")
-        if hist.empty:
-            return jsonify({"error": "Ticker non trovato"}), 404
-        prev_close = float(hist['Close'].iloc[-2]) if len(hist) >= 2 else float(hist['Close'].iloc[-1])
-        price = float(hist['Close'].iloc[-1])
-        change = price - prev_close
-        change_pct = (change / prev_close) * 100
-        info = t.fast_info
-        return jsonify({
-            "ticker": ticker.upper(),
-            "price": round(price, 2),
-            "change": round(change, 2),
-            "changePct": round(change_pct, 2),
-            "volume": int(hist['Volume'].iloc[-1]),
-            "high": round(float(hist['High'].iloc[-1]), 2),
-            "low": round(float(hist['Low'].iloc[-1]), 2),
-            "prevClose": round(prev_close, 2),
-            "currency": getattr(info, 'currency', 'USD'),
-        })
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-@app.route('/technicals/<ticker>')
-def technicals(ticker):
-    try:
-        t = yf.Ticker(ticker)
-        hist = t.history(period="1y", interval="1d")
-        if hist.empty:
-            return jsonify({"error": "Nessun dato"}), 404
-        close = hist['Close']
-        delta = close.diff()
-        gain = delta.clip(lower=0).rolling(14).mean()
-        loss = (-delta.clip(upper=0)).rolling(14).mean()
-        rs = gain / loss
-        rsi = 100 - (100 / (1 + rs))
-        ema12 = close.ewm(span=12).mean()
-        ema26 = close.ewm(span=26).mean()
-        macd = ema12 - ema26
-        signal = macd.ewm(span=9).mean()
-        sma50 = close.rolling(50).mean()
-        sma200 = close.rolling(200).mean()
-        sma20 = close.rolling(20).mean()
-        std20 = close.rolling(20).std()
-        return jsonify({
-            "rsi": round(float(rsi.iloc[-1]), 1),
-            "macd": round(float(macd.iloc[-1]), 3),
-            "signal": round(float(signal.iloc[-1]), 3),
-            "sma50": round(float(sma50.iloc[-1]), 2),
-            "sma200": round(float(sma200.iloc[-1]), 2) if len(close) >= 200 else None,
-            "bb_upper": round(float((sma20 + 2*std20).iloc[-1]), 2),
-            "bb_lower": round(float((sma20 - 2*std20).iloc[-1]), 2),
-            "high52w": round(float(close.rolling(252).max().iloc[-1]), 2),
-            "low52w": round(float(close.rolling(252).min().iloc[-1]), 2),
-        })
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    return jsonify({"status": "OMAHA Backend attivo", "version": "4.0"})
 
-@app.route('/fundamentals/<ticker>')
-def fundamentals(ticker):
+@app.route('/analyze/<ticker>')
+def analyze(ticker):
     try:
         t = yf.Ticker(ticker)
+        hist_daily = t.history(period="1y", interval="1d")
+        hist_monthly = t.history(period="5y", interval="1mo")
         info = t.info
+        hist2 = t.history(period="2d")
+        quote = None
+        if not hist2.empty:
+            prev = float(hist2['Close'].iloc[-2]) if len(hist2)>=2 else float(hist2['Close'].iloc[-1])
+            price = float(hist2['Close'].iloc[-1])
+            change = price - prev
+            quote = {
+                "price": round(price,2), "change": round(change,2),
+                "changePct": round((change/prev)*100,2),
+                "volume": int(hist2['Volume'].iloc[-1]),
+                "high": round(float(hist2['High'].iloc[-1]),2),
+                "low": round(float(hist2['Low'].iloc[-1]),2),
+                "prevClose": round(prev,2),
+                "currency": getattr(t.fast_info,'currency','USD'),
+            }
+        tech = None
+        if not hist_daily.empty:
+            close = hist_daily['Close']
+            delta = close.diff()
+            gain = delta.clip(lower=0).rolling(14).mean()
+            loss = (-delta.clip(upper=0)).rolling(14).mean()
+            rs = gain/loss
+            rsi = 100-(100/(1+rs))
+            ema12 = close.ewm(span=12).mean()
+            ema26 = close.ewm(span=26).mean()
+            macd = ema12-ema26
+            signal = macd.ewm(span=9).mean()
+            sma20 = close.rolling(20).mean()
+            std20 = close.rolling(20).std()
+            tech = {
+                "rsi": round(float(rsi.iloc[-1]),1),
+                "macd": round(float(macd.iloc[-1]),3),
+                "signal": round(float(signal.iloc[-1]),3),
+                "sma50": round(float(close.rolling(50).mean().iloc[-1]),2),
+                "sma200": round(float(close.rolling(200).mean().iloc[-1]),2) if len(close)>=200 else None,
+                "bb_upper": round(float((sma20+2*std20).iloc[-1]),2),
+                "bb_lower": round(float((sma20-2*std20).iloc[-1]),2),
+                "high52w": round(float(close.rolling(252).max().iloc[-1]),2),
+                "low52w": round(float(close.rolling(252).min().iloc[-1]),2),
+            }
         income = t.financials
         inc_list = []
         if income is not None and not income.empty:
             for col in income.columns[:5]:
-                year = str(col)[:4]
-                rev = income.loc['Total Revenue', col] if 'Total Revenue' in income.index else None
-                net = income.loc['Net Income', col] if 'Net Income' in income.index else None
+                rev = income.loc['Total Revenue',col] if 'Total Revenue' in income.index else None
+                net = income.loc['Net Income',col] if 'Net Income' in income.index else None
                 inc_list.append({
-                    "year": year,
-                    "revenue": int(rev) if rev and rev == rev else None,
-                    "netIncome": int(net) if net and net == net else None,
-                    "margin": round((net/rev*100), 1) if rev and net and rev != 0 and rev == rev and net == net else None,
+                    "year": str(col)[:4],
+                    "revenue": int(rev) if rev and rev==rev else None,
+                    "netIncome": int(net) if net and net==net else None,
+                    "margin": round((net/rev*100),1) if rev and net and rev!=0 and rev==rev and net==net else None,
                 })
         divs = t.dividends
         div_list = []
         if divs is not None and not divs.empty:
-            for date, amount in divs.tail(12).items():
-                div_list.append({"date": str(date)[:10], "amount": round(float(amount), 4)})
+            for date,amount in divs.tail(12).items():
+                div_list.append({"date":str(date)[:10],"amount":round(float(amount),4)})
             div_list.reverse()
-        return jsonify({
-            "name": info.get('longName', ticker),
-            "sector": info.get('sector', '—'),
-            "industry": info.get('industry', '—'),
-            "pe": info.get('trailingPE', None),
-            "pb": info.get('priceToBook', None),
-            "eps": info.get('trailingEps', None),
-            "dividendYield": info.get('dividendYield', None),
-            "roe": info.get('returnOnEquity', None),
-            "debtToEquity": info.get('debtToEquity', None),
-            "profitMargins": info.get('profitMargins', None),
-            "revenueGrowth": info.get('revenueGrowth', None),
+        history = []
+        if not hist_monthly.empty:
+            for date,row in hist_monthly.iterrows():
+                history.append({"date":str(date)[:10],"price":round(float(row['Close']),2)})
+        fund = {
+            "name": info.get('longName',ticker),
+            "sector": info.get('sector','—'),
+            "industry": info.get('industry','—'),
+            "pe": info.get('trailingPE',None),
+            "pb": info.get('priceToBook',None),
+            "eps": info.get('trailingEps',None),
+            "dividendYield": info.get('dividendYield',None),
+            "roe": info.get('returnOnEquity',None),
+            "debtToEquity": info.get('debtToEquity',None),
+            "profitMargins": info.get('profitMargins',None),
             "income": inc_list,
             "dividends": div_list,
-            "description": (info.get('longBusinessSummary', '') or '')[:400],
+            "description": (info.get('longBusinessSummary','') or '')[:300],
+        }
+        fin_summary = "Dati non disponibili."
+        if inc_list:
+            fin_summary = "\n".join([f"{r['year']}: Ricavi {r['revenue']}, Utile {r['netIncome']}, Margine {r['margin']}%" for r in inc_list])
+        if div_list:
+            fin_summary += f"\nDividendi recenti: {', '.join([f\"{d['date'][:7]} ${d['amount']}\" for d in div_list[:4]])}"
+
+        tech_prompt = f"""Sei un analista tecnico senior. Analizza {ticker} ({fund['name']}).
+Dati reali: Prezzo ${quote['price'] if quote else 'N/D'}, RSI={tech['rsi'] if tech else 'N/D'}, MACD={tech['macd'] if tech else 'N/D'}, SMA50={tech['sma50'] if tech else 'N/D'}, SMA200={tech['sma200'] if tech else 'N/D'}, BB_upper={tech['bb_upper'] if tech else 'N/D'}, BB_lower={tech['bb_lower'] if tech else 'N/D'}, Max52w={tech['high52w'] if tech else 'N/D'}, Min52w={tech['low52w'] if tech else 'N/D'}
+Rispondi SOLO JSON valido: {{"score":7,"trend":"RIALZISTA","forza":"FORTE","segnale":"COMPRA","supporto":"livello","resistenza":"livello","analisi":"180 parole italiano","punti_forza":["p1","p2","p3"],"punti_debolezza":["p1","p2"]}}"""
+
+        fund_prompt = f"""Sei un analista fondamentale senior. Analizza {ticker} ({fund['name']}).
+Settore: {fund['sector']}. PE={fund['pe']}, ROE={fund['roe']}, Margine={fund['profitMargins']}, D/E={fund['debtToEquity']}, DivYield={fund['dividendYield']}
+Bilanci 5 anni: {fin_summary}
+Rispondi SOLO JSON valido: {{"score":7,"valutazione":"SOTTOVALUTATA","moat":"AMPIO","qualita":"BUONA","segnale":"COMPRA","analisi":"180 parole italiano","punti_forza":["p1","p2","p3"],"punti_debolezza":["p1","p2"],"prev_breve":"testo","prev_medio":"testo","prev_lungo":"testo"}}"""
+
+        import json
+        tech_ai = json.loads(ask_gemini("Sei un analista tecnico. Rispondi SOLO JSON.", tech_prompt))
+        fund_ai = json.loads(ask_gemini("Sei un analista fondamentale. Rispondi SOLO JSON.", fund_prompt))
+
+        arb_prompt = f"""Sei l arbitro di un sistema multi-agente. Analizza {ticker}.
+TECNICO score={tech_ai['score']}, segnale={tech_ai['segnale']}, analisi={tech_ai['analisi']}
+FONDAMENTALE score={fund_ai['score']}, segnale={fund_ai['segnale']}, analisi={fund_ai['analisi']}
+Rispondi SOLO JSON valido: {{"score_finale":7,"verdetto":"COMPRA","confidenza":"ALTA","rischio":"MEDIO","orizzonte":"MEDIO (6-12 mesi)","target_upside":"+15%","accordo":"CONCORDANO","sintesi":"220 parole italiano","previsione":"100 parole italiano","catalyst_pos":["c1","c2"],"catalyst_neg":["r1","r2"]}}"""
+
+        arb_ai = json.loads(ask_gemini("Sei un arbitro finanziario. Rispondi SOLO JSON.", arb_prompt))
+
+        return jsonify({
+            "ticker": ticker.upper(),
+            "quote": quote,
+            "tech": tech,
+            "fund": fund,
+            "tech_ai": tech_ai,
+            "fund_ai": fund_ai,
+            "arb_ai": arb_ai,
+            "history": history,
         })
-    except Exception as e:
-       @app.route('/history/<ticker>')
-def price_history(ticker):
-    try:
-        t = yf.Ticker(ticker)
-        hist = t.history(period="5y", interval="1mo")
-        if hist.empty:
-            return jsonify([])
-        result = []
-        for date, row in hist.iterrows():
-            result.append({"date": str(date)[:10], "price": round(float(row['Close']), 2)})
-        return jsonify(result)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
