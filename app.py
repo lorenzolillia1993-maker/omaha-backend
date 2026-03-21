@@ -11,7 +11,7 @@ CORS(app)
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
 
 def ask_gemini(system, user):
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
     body = {
         "contents": [{"role": "user", "parts": [{"text": f"{system}\n\n{user}"}]}],
         "generationConfig": {"temperature": 0.7, "maxOutputTokens": 1500}
