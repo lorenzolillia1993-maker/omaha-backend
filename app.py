@@ -3,6 +3,7 @@ from flask_cors import CORS
 import yfinance as yf
 import requests
 import os
+from flask import render_template
 
 app = Flask(__name__)
 CORS(app)
@@ -24,6 +25,10 @@ def ask_gemini(system, user):
 @app.route('/')
 def home():
     return jsonify({"status": "OMAHA Backend attivo", "version": "4.0"})
+
+@app.route('/app')
+def serve_app():
+    return render_template('index.html')
 
 @app.route('/analyze/<ticker>')
 def analyze(ticker):
