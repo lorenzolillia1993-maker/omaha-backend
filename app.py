@@ -18,6 +18,8 @@ def ask_gemini(system, user):
     }
     r = requests.post(url, json=body, timeout=60)
     data = r.json()
+    if 'candidates' not in data:
+        raise Exception(f"Gemini error: {data.get('error', {}).get('message', str(data))}")
     text = data['candidates'][0]['content']['parts'][0]['text']
     text = text.replace('```json','').replace('```','').strip()
     return text
