@@ -8,25 +8,34 @@ import json
 app = Flask(__name__)
 CORS(app)
 
-GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
+GROQ_API_KEY = os.environ.get('GROQ_API_KEY', '')
 
-def ask_gemini(system, user):
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
-    body = {
-        "contents": [{"role": "user", "parts": [{"text": f"{system}\n\n{user}"}]}],
-        "generationConfig": {"temperature": 0.7, "maxOutputTokens": 1500}
+def ask_groq(system, user):
+    url = "https://api.groq.com/openai/v1/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {GROQ_API_KEY}",
+        "Content-Type": "application/json"
     }
-    r = requests.post(url, json=body, timeout=60)
+    body = {
+        "model": "llama3-8b-8192",
+        "messages": [
+            {"role": "system", "content": system},
+            {"role": "user", "content": user}
+        ],
+        "temperature": 0.7,
+        "max_tokens": 1500
+    }
+    r = requests.post(url, json=body, headers=headers, timeout=60)
     data = r.json()
-    if 'candidates' not in data:
-        raise Exception(f"Gemini error: {data.get('error', {}).get('message', str(data))}")
-    text = data['candidates'][0]['content']['parts'][0]['text']
+    if 'choices' not in data:
+        raise Exception(f"Groq error: {data.get('error', {}).get('message', str(data))}")
+    text = data['choices'][0]['message']['content']
     text = text.replace('```json','').replace('```','').strip()
     return text
 
 @app.route('/')
 def home():
-    return jsonify({"status": "OMAHA Backend attivo", "version": "4.0"})
+    return jsonify({"status": "OMAHA Backend attivo", "version": "5.0"})
 
 @app.route('/app')
 def serve_app():
@@ -165,12 +174,22 @@ def analyze(ticker):
             fin_summary = "\n".join([f"{r['year']}: Ricavi {r['revenue']}, Utile {r['netIncome']}, Margine {r['margin']}%" for r in inc_list])
         if div_list:
             fin_summary += "\nDividendi: " + ", ".join([f"{d['date'][:7]} ${d['amount']}" for d in div_list[:4]])
-        tech_prompt = f"Sei un analista tecnico senior. Analizza {ticker} ({fund['name']}). Prezzo=${quote['price'] if quote else 'N/D'}, RSI={tech['rsi'] if tech else 'N/D'}, MACD={tech['macd'] if tech else 'N/D'}, SMA50={tech['sma50'] if tech else 'N/D'}, SMA200={tech['sma200'] if tech else 'N/D'}, BB_upper={tech['bb_upper'] if tech else 'N/D'}, BB_lower={tech['bb_lower'] if tech else 'N/D'}, Max52w={tech['high52w'] if tech else 'N/D'}, Min52w={tech['low52w'] if tech else 'N/D'}. Rispondi SOLO JSON valido senza testo extra: {{\"score\":7,\"trend\":\"RIALZISTA\",\"forza\":\"FORTE\",\"segnale\":\"COMPRA\",\"supporto\":\"livello\",\"resistenza\":\"livello\",\"analisi\":\"180 parole italiano\",\"punti_forza\":[\"p1\",\"p2\",\"p3\"],\"punti_debolezza\":[\"p1\",\"p2\"]}}"
-        fund_prompt = f"Sei un analista fondamentale senior. Analizza {ticker} ({fund['name']}). Settore={fund['sector']}, PE={fund['pe']}, ROE={fund['roe']}, Margine={fund['profitMargins']}, D/E={fund['debtToEquity']}, DivYield={fund['dividendYield']}. Bilanci: {fin_summary}. Rispondi SOLO JSON valido: {{\"score\":7,\"valutazione\":\"SOTTOVALUTATA\",\"moat\":\"AMPIO\",\"qualita\":\"BUONA\",\"segnale\":\"COMPRA\",\"analisi\":\"180 parole italiano\",\"punti_forza\":[\"p1\",\"p2\",\"p3\"],\"punti_debolezza\":[\"p1\",\"p2\"],\"prev_breve\":\"testo\",\"prev_medio\":\"testo\",\"prev_lungo\":\"testo\"}}"
-        tech_ai = json.loads(ask_gemini("Sei un analista tecnico. Rispondi SOLO JSON valido.", tech_prompt))
-        fund_ai = json.loads(ask_gemini("Sei un analista fondamentale. Rispondi SOLO JSON valido.", fund_prompt))
-        arb_prompt = f"Sei l arbitro di un sistema multi-agente. Analizza {ticker}. TECNICO score={tech_ai['score']}, segnale={tech_ai['segnale']}, analisi={tech_ai['analisi']}. FONDAMENTALE score={fund_ai['score']}, segnale={fund_ai['segnale']}, analisi={fund_ai['analisi']}. Rispondi SOLO JSON valido: {{\"score_finale\":7,\"verdetto\":\"COMPRA\",\"confidenza\":\"ALTA\",\"rischio\":\"MEDIO\",\"orizzonte\":\"MEDIO (6-12 mesi)\",\"target_upside\":\"+15%\",\"accordo\":\"CONCORDANO\",\"sintesi\":\"220 parole italiano\",\"previsione\":\"100 parole italiano\",\"catalyst_pos\":[\"c1\",\"c2\"],\"catalyst_neg\":[\"r1\",\"r2\"]}}"
-        arb_ai = json.loads(ask_gemini("Sei un arbitro finanziario. Rispondi SOLO JSON valido.", arb_prompt))
+
+        tech_ai = json.loads(ask_groq(
+            "Sei un analista tecnico senior. Rispondi SOLO con JSON valido, nessun testo extra.",
+            f"Analizza {ticker} ({fund['name']}). Prezzo=${quote['price'] if quote else 'N/D'}, RSI={tech['rsi'] if tech else 'N/D'}, MACD={tech['macd'] if tech else 'N/D'}, SMA50={tech['sma50'] if tech else 'N/D'}, SMA200={tech['sma200'] if tech else 'N/D'}, BB_upper={tech['bb_upper'] if tech else 'N/D'}, BB_lower={tech['bb_lower'] if tech else 'N/D'}, Max52w={tech['high52w'] if tech else 'N/D'}, Min52w={tech['low52w'] if tech else 'N/D'}. Rispondi SOLO JSON: {{\"score\":7,\"trend\":\"RIALZISTA\",\"forza\":\"FORTE\",\"segnale\":\"COMPRA\",\"supporto\":\"livello\",\"resistenza\":\"livello\",\"analisi\":\"180 parole italiano\",\"punti_forza\":[\"p1\",\"p2\",\"p3\"],\"punti_debolezza\":[\"p1\",\"p2\"]}}"
+        ))
+
+        fund_ai = json.loads(ask_groq(
+            "Sei un analista fondamentale senior. Rispondi SOLO con JSON valido, nessun testo extra.",
+            f"Analizza {ticker} ({fund['name']}). Settore={fund['sector']}, PE={fund['pe']}, ROE={fund['roe']}, Margine={fund['profitMargins']}, D/E={fund['debtToEquity']}, DivYield={fund['dividendYield']}. Bilanci: {fin_summary}. Rispondi SOLO JSON: {{\"score\":7,\"valutazione\":\"SOTTOVALUTATA\",\"moat\":\"AMPIO\",\"qualita\":\"BUONA\",\"segnale\":\"COMPRA\",\"analisi\":\"180 parole italiano\",\"punti_forza\":[\"p1\",\"p2\",\"p3\"],\"punti_debolezza\":[\"p1\",\"p2\"],\"prev_breve\":\"testo\",\"prev_medio\":\"testo\",\"prev_lungo\":\"testo\"}}"
+        ))
+
+        arb_ai = json.loads(ask_groq(
+            "Sei un arbitro finanziario senior. Rispondi SOLO con JSON valido, nessun testo extra.",
+            f"Analizza {ticker}. TECNICO score={tech_ai['score']}, segnale={tech_ai['segnale']}, analisi={tech_ai['analisi']}. FONDAMENTALE score={fund_ai['score']}, segnale={fund_ai['segnale']}, analisi={fund_ai['analisi']}. Rispondi SOLO JSON: {{\"score_finale\":7,\"verdetto\":\"COMPRA\",\"confidenza\":\"ALTA\",\"rischio\":\"MEDIO\",\"orizzonte\":\"MEDIO (6-12 mesi)\",\"target_upside\":\"+15%\",\"accordo\":\"CONCORDANO\",\"sintesi\":\"220 parole italiano\",\"previsione\":\"100 parole italiano\",\"catalyst_pos\":[\"c1\",\"c2\"],\"catalyst_neg\":[\"r1\",\"r2\"]}}"
+        ))
+
         return jsonify({
             "ticker": ticker.upper(),
             "quote": quote,
