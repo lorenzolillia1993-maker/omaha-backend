@@ -17,7 +17,7 @@ def ask_groq(system, user):
         "Content-Type": "application/json"
     }
     body = {
-        "model": "llama3-8b-8192",
+        "model": "llama-3.3-70b-versatile",
         "messages": [
             {"role": "system", "content": system},
             {"role": "user", "content": user}
