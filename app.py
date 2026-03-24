@@ -23,7 +23,7 @@ def ask_groq(system, user):
             {"role": "user", "content": user}
         ],
         "temperature": 0.7,
-        "max_tokens": 1500
+        "max_tokens": 2000
     }
     r = requests.post(url, json=body, headers=headers, timeout=60)
     data = r.json()
@@ -35,54 +35,35 @@ def ask_groq(system, user):
 
 @app.route('/')
 def home():
-    return jsonify({"status": "OMAHA Backend attivo", "version": "5.0"})
+    return jsonify({"status": "OMAHA Backend attivo", "version": "6.0"})
 
 @app.route('/app')
 def serve_app():
     return render_template('index.html')
 
-@app.route('/screener')
-def screener():
-    stocks = [
-        {"ticker":"AAPL","name":"Apple Inc.","sector":"Technology","market":"NASDAQ"},
-        {"ticker":"MSFT","name":"Microsoft Corp.","sector":"Technology","market":"NASDAQ"},
-        {"ticker":"GOOGL","name":"Alphabet Inc.","sector":"Technology","market":"NASDAQ"},
-        {"ticker":"AMZN","name":"Amazon.com Inc.","sector":"Consumer","market":"NASDAQ"},
-        {"ticker":"NVDA","name":"NVIDIA Corp.","sector":"Technology","market":"NASDAQ"},
-        {"ticker":"META","name":"Meta Platforms","sector":"Technology","market":"NASDAQ"},
-        {"ticker":"TSLA","name":"Tesla Inc.","sector":"Auto","market":"NASDAQ"},
-        {"ticker":"AMD","name":"Advanced Micro Devices","sector":"Technology","market":"NASDAQ"},
-        {"ticker":"INTC","name":"Intel Corp.","sector":"Technology","market":"NASDAQ"},
-        {"ticker":"NFLX","name":"Netflix Inc.","sector":"Technology","market":"NASDAQ"},
-        {"ticker":"JPM","name":"JPMorgan Chase","sector":"Finance","market":"NYSE"},
-        {"ticker":"GS","name":"Goldman Sachs","sector":"Finance","market":"NYSE"},
-        {"ticker":"BAC","name":"Bank of America","sector":"Finance","market":"NYSE"},
-        {"ticker":"V","name":"Visa Inc.","sector":"Finance","market":"NYSE"},
-        {"ticker":"MA","name":"Mastercard Inc.","sector":"Finance","market":"NYSE"},
-        {"ticker":"KO","name":"Coca-Cola Co.","sector":"Consumer","market":"NYSE"},
-        {"ticker":"PEP","name":"PepsiCo Inc.","sector":"Consumer","market":"NASDAQ"},
-        {"ticker":"MCD","name":"McDonald's Corp.","sector":"Consumer","market":"NYSE"},
-        {"ticker":"NKE","name":"Nike Inc.","sector":"Consumer","market":"NYSE"},
-        {"ticker":"WMT","name":"Walmart Inc.","sector":"Consumer","market":"NYSE"},
-        {"ticker":"JNJ","name":"Johnson & Johnson","sector":"Healthcare","market":"NYSE"},
-        {"ticker":"PFE","name":"Pfizer Inc.","sector":"Healthcare","market":"NYSE"},
-        {"ticker":"XOM","name":"ExxonMobil Corp.","sector":"Energy","market":"NYSE"},
-        {"ticker":"CVX","name":"Chevron Corp.","sector":"Energy","market":"NYSE"},
-        {"ticker":"ENI.MI","name":"ENI SpA","sector":"Energy","market":"MIL"},
-        {"ticker":"ENEL.MI","name":"Enel SpA","sector":"Utilities","market":"MIL"},
-        {"ticker":"ISP.MI","name":"Intesa Sanpaolo","sector":"Finance","market":"MIL"},
-        {"ticker":"UCG.MI","name":"UniCredit SpA","sector":"Finance","market":"MIL"},
-        {"ticker":"RACE.MI","name":"Ferrari NV","sector":"Auto","market":"MIL"},
-        {"ticker":"STM.MI","name":"STMicroelectronics","sector":"Technology","market":"MIL"},
-        {"ticker":"G.MI","name":"Generali Assicurazioni","sector":"Finance","market":"MIL"},
-        {"ticker":"TIT.MI","name":"Telecom Italia","sector":"Telecom","market":"MIL"},
-        {"ticker":"LDO.MI","name":"Leonardo SpA","sector":"Defense","market":"MIL"},
-        {"ticker":"MONC.MI","name":"Moncler SpA","sector":"Luxury","market":"MIL"},
-        {"ticker":"TRN.MI","name":"Terna SpA","sector":"Utilities","market":"MIL"},
-        {"ticker":"SRG.MI","name":"Snam SpA","sector":"Energy","market":"MIL"},
-        {"ticker":"BAMI.MI","name":"Banco BPM","sector":"Finance","market":"MIL"},
-    ]
-    return jsonify(stocks)
+@app.route('/search')
+def search():
+    q = request.args.get('q', '').strip()
+    if len(q) < 1:
+        return jsonify([])
+    try:
+        url = f"https://query2.finance.yahoo.com/v1/finance/search?q={q}&lang=it-IT&region=IT&quotesCount=20&newsCount=0&listsCount=0"
+        headers = {"User-Agent": "Mozilla/5.0"}
+        r = requests.get(url, headers=headers, timeout=10)
+        data = r.json()
+        results = []
+        for item in data.get('quotes', []):
+            if item.get('quoteType') in ['EQUITY', 'ETF']:
+                results.append({
+                    "ticker": item.get('symbol', ''),
+                    "name": item.get('longname') or item.get('shortname', ''),
+                    "exchange": item.get('exchange', ''),
+                    "type": item.get('quoteType', ''),
+                    "sector": item.get('sector', '—'),
+                })
+        return jsonify(results[:15])
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/analyze/<ticker>')
 def analyze(ticker):
@@ -92,6 +73,7 @@ def analyze(ticker):
         hist_monthly = t.history(period="5y", interval="1mo")
         info = t.info
         hist2 = t.history(period="2d")
+
         quote = None
         if not hist2.empty:
             prev = float(hist2['Close'].iloc[-2]) if len(hist2) >= 2 else float(hist2['Close'].iloc[-1])
@@ -107,6 +89,7 @@ def analyze(ticker):
                 "prevClose": round(prev, 2),
                 "currency": getattr(t.fast_info, 'currency', 'USD'),
             }
+
         tech = None
         if not hist_daily.empty:
             close = hist_daily['Close']
@@ -132,6 +115,7 @@ def analyze(ticker):
                 "high52w": round(float(close.rolling(252).max().iloc[-1]), 2),
                 "low52w": round(float(close.rolling(252).min().iloc[-1]), 2),
             }
+
         income = t.financials
         inc_list = []
         if income is not None and not income.empty:
@@ -144,20 +128,24 @@ def analyze(ticker):
                     "netIncome": int(net) if net and net == net else None,
                     "margin": round((net/rev*100), 1) if rev and net and rev != 0 and rev == rev and net == net else None,
                 })
+
         divs = t.dividends
         div_list = []
         if divs is not None and not divs.empty:
             for date, amount in divs.tail(12).items():
                 div_list.append({"date": str(date)[:10], "amount": round(float(amount), 4)})
             div_list.reverse()
+
         history = []
         if not hist_monthly.empty:
             for date, row in hist_monthly.iterrows():
                 history.append({"date": str(date)[:10], "price": round(float(row['Close']), 2)})
+
         fund = {
             "name": info.get('longName', ticker),
             "sector": info.get('sector', '—'),
             "industry": info.get('industry', '—'),
+            "country": info.get('country', '—'),
             "pe": info.get('trailingPE', None),
             "pb": info.get('priceToBook', None),
             "eps": info.get('trailingEps', None),
@@ -165,29 +153,65 @@ def analyze(ticker):
             "roe": info.get('returnOnEquity', None),
             "debtToEquity": info.get('debtToEquity', None),
             "profitMargins": info.get('profitMargins', None),
+            "beta": info.get('beta', None),
+            "marketCap": info.get('marketCap', None),
             "income": inc_list,
             "dividends": div_list,
-            "description": (info.get('longBusinessSummary', '') or '')[:300],
+            "description": (info.get('longBusinessSummary', '') or '')[:400],
         }
+
         fin_summary = "Dati non disponibili."
         if inc_list:
             fin_summary = "\n".join([f"{r['year']}: Ricavi {r['revenue']}, Utile {r['netIncome']}, Margine {r['margin']}%" for r in inc_list])
         if div_list:
             fin_summary += "\nDividendi: " + ", ".join([f"{d['date'][:7]} ${d['amount']}" for d in div_list[:4]])
 
+        price_info = f"Prezzo=${quote['price'] if quote else 'N/D'}"
+        tech_info = f"RSI={tech['rsi'] if tech else 'N/D'}, MACD={tech['macd'] if tech else 'N/D'}, SMA50={tech['sma50'] if tech else 'N/D'}, SMA200={tech['sma200'] if tech else 'N/D'}, BB_upper={tech['bb_upper'] if tech else 'N/D'}, BB_lower={tech['bb_lower'] if tech else 'N/D'}, Max52w={tech['high52w'] if tech else 'N/D'}, Min52w={tech['low52w'] if tech else 'N/D'}"
+        fund_info = f"Settore={fund['sector']}, Paese={fund['country']}, PE={fund['pe']}, ROE={fund['roe']}, Margine={fund['profitMargins']}, D/E={fund['debtToEquity']}, Beta={fund['beta']}, DivYield={fund['dividendYield']}"
+        temporal_schema = '"prev_1m":"outlook","prev_3m":"outlook","prev_6m":"outlook","prev_1a":"outlook","prev_3a":"outlook","prev_5a":"outlook"'
+
+        # AGENTE 1: TECNICO
         tech_ai = json.loads(ask_groq(
-            "Sei un analista tecnico senior. Rispondi SOLO con JSON valido, nessun testo extra.",
-            f"Analizza {ticker} ({fund['name']}). Prezzo=${quote['price'] if quote else 'N/D'}, RSI={tech['rsi'] if tech else 'N/D'}, MACD={tech['macd'] if tech else 'N/D'}, SMA50={tech['sma50'] if tech else 'N/D'}, SMA200={tech['sma200'] if tech else 'N/D'}, BB_upper={tech['bb_upper'] if tech else 'N/D'}, BB_lower={tech['bb_lower'] if tech else 'N/D'}, Max52w={tech['high52w'] if tech else 'N/D'}, Min52w={tech['low52w'] if tech else 'N/D'}. Rispondi SOLO JSON: {{\"score\":7,\"trend\":\"RIALZISTA\",\"forza\":\"FORTE\",\"segnale\":\"COMPRA\",\"supporto\":\"livello\",\"resistenza\":\"livello\",\"analisi\":\"180 parole italiano\",\"punti_forza\":[\"p1\",\"p2\",\"p3\"],\"punti_debolezza\":[\"p1\",\"p2\"]}}"
+            "Sei un analista tecnico senior. Rispondi SOLO JSON valido.",
+            f"Analizza {ticker} ({fund['name']}). {price_info}, {tech_info}. Rispondi SOLO JSON: {{\"score\":7,\"trend\":\"RIALZISTA\",\"forza\":\"FORTE\",\"segnale\":\"COMPRA\",\"supporto\":\"livello\",\"resistenza\":\"livello\",\"analisi\":\"150 parole italiano\",\"punti_forza\":[\"p1\",\"p2\"],\"punti_debolezza\":[\"p1\",\"p2\"],{temporal_schema}}}"
         ))
 
+        # AGENTE 2: FONDAMENTALE
         fund_ai = json.loads(ask_groq(
-            "Sei un analista fondamentale senior. Rispondi SOLO con JSON valido, nessun testo extra.",
-            f"Analizza {ticker} ({fund['name']}). Settore={fund['sector']}, PE={fund['pe']}, ROE={fund['roe']}, Margine={fund['profitMargins']}, D/E={fund['debtToEquity']}, DivYield={fund['dividendYield']}. Bilanci: {fin_summary}. Rispondi SOLO JSON: {{\"score\":7,\"valutazione\":\"SOTTOVALUTATA\",\"moat\":\"AMPIO\",\"qualita\":\"BUONA\",\"segnale\":\"COMPRA\",\"analisi\":\"180 parole italiano\",\"punti_forza\":[\"p1\",\"p2\",\"p3\"],\"punti_debolezza\":[\"p1\",\"p2\"],\"prev_breve\":\"testo\",\"prev_medio\":\"testo\",\"prev_lungo\":\"testo\"}}"
+            "Sei un analista fondamentale senior. Rispondi SOLO JSON valido.",
+            f"Analizza {ticker} ({fund['name']}). {fund_info}. Bilanci: {fin_summary}. Rispondi SOLO JSON: {{\"score\":7,\"valutazione\":\"SOTTOVALUTATA\",\"moat\":\"AMPIO\",\"qualita\":\"BUONA\",\"segnale\":\"COMPRA\",\"analisi\":\"150 parole italiano\",\"punti_forza\":[\"p1\",\"p2\"],\"punti_debolezza\":[\"p1\",\"p2\"],{temporal_schema}}}"
         ))
 
+        # AGENTE 3: GEOPOLITICO
+        geo_ai = json.loads(ask_groq(
+            "Sei un analista geopolitico senior specializzato in impatti sui mercati finanziari. Rispondi SOLO JSON valido.",
+            f"Analizza l impatto geopolitico su {ticker} ({fund['name']}, settore {fund['sector']}, paese {fund['country']}). Considera tensioni internazionali, sanzioni, guerre commerciali, rischi regionali, relazioni diplomatiche che impattano questo titolo. Rispondi SOLO JSON: {{\"score\":7,\"rischio_geopolitico\":\"ALTO|MEDIO|BASSO\",\"aree_rischio\":[\"area1\",\"area2\"],\"opportunita_geo\":[\"opp1\",\"opp2\"],\"segnale\":\"COMPRA|VENDI|NEUTRO|ATTENDI\",\"analisi\":\"150 parole italiano focalizzata su come la geopolitica influenzerà il prezzo\",{temporal_schema}}}"
+        ))
+
+        # AGENTE 4: ECONOMETRICO
+        prices_str = ",".join([str(h['price']) for h in history[-24:]]) if history else "N/D"
+        eco_ai = json.loads(ask_groq(
+            "Sei un econometrista quantitativo senior specializzato in modelli predittivi dei mercati. Rispondi SOLO JSON valido.",
+            f"Esegui analisi econometrica approfondita di {ticker} ({fund['name']}). Prezzi mensili ultimi 2 anni: [{prices_str}]. Beta={fund['beta']}, Volatilità implicita dai dati. Applica modelli ARIMA, regressione, analisi della volatilità, mean reversion, momentum per prevedere l andamento futuro del prezzo. Rispondi SOLO JSON: {{\"score\":7,\"volatilita\":\"ALTA|MEDIA|BASSA\",\"trend_statistico\":\"RIALZISTA|RIBASSISTA|LATERALE\",\"mean_reversion\":\"SI|NO\",\"momentum\":\"POSITIVO|NEGATIVO|NEUTRO\",\"segnale\":\"COMPRA|VENDI|NEUTRO|ATTENDI\",\"analisi\":\"150 parole italiano con focus su previsione quantitativa prezzo\",{temporal_schema}}}"
+        ))
+
+        # AGENTE 5: MACROECONOMICO
+        macro_ai = json.loads(ask_groq(
+            "Sei un analista macroeconomico senior specializzato in impatti macro sui mercati. Rispondi SOLO JSON valido.",
+            f"Analizza l impatto macroeconomico su {ticker} ({fund['name']}, settore {fund['sector']}). Considera: tassi di interesse Fed/BCE, inflazione, PIL, disoccupazione, politiche monetarie, ciclo economico, credito, curva dei rendimenti. Come questi fattori macro influenzeranno il prezzo del titolo. Rispondi SOLO JSON: {{\"score\":7,\"ciclo_economico\":\"ESPANSIONE|PICCO|RECESSIONE|RIPRESA\",\"impatto_tassi\":\"POSITIVO|NEGATIVO|NEUTRO\",\"impatto_inflazione\":\"POSITIVO|NEGATIVO|NEUTRO\",\"segnale\":\"COMPRA|VENDI|NEUTRO|ATTENDI\",\"analisi\":\"150 parole italiano focalizzata su come il macro influenzerà il prezzo\",{temporal_schema}}}"
+        ))
+
+        # AGENTE 6: ARBITRO FINALE (tutti e 5 gli agenti)
         arb_ai = json.loads(ask_groq(
-            "Sei un arbitro finanziario senior. Rispondi SOLO con JSON valido, nessun testo extra.",
-            f"Analizza {ticker}. TECNICO score={tech_ai['score']}, segnale={tech_ai['segnale']}, analisi={tech_ai['analisi']}. FONDAMENTALE score={fund_ai['score']}, segnale={fund_ai['segnale']}, analisi={fund_ai['analisi']}. Rispondi SOLO JSON: {{\"score_finale\":7,\"verdetto\":\"COMPRA\",\"confidenza\":\"ALTA\",\"rischio\":\"MEDIO\",\"orizzonte\":\"MEDIO (6-12 mesi)\",\"target_upside\":\"+15%\",\"accordo\":\"CONCORDANO\",\"sintesi\":\"220 parole italiano\",\"previsione\":\"100 parole italiano\",\"catalyst_pos\":[\"c1\",\"c2\"],\"catalyst_neg\":[\"r1\",\"r2\"]}}"
+            "Sei il direttore di un sistema multi-agente di analisi finanziaria. Sintetizzi i report di 5 agenti specializzati. Rispondi SOLO JSON valido.",
+            f"""Ticker: {ticker} ({fund['name']})
+TECNICO (score {tech_ai['score']}/10): segnale={tech_ai['segnale']}, trend={tech_ai.get('trend','N/D')}
+FONDAMENTALE (score {fund_ai['score']}/10): segnale={fund_ai['segnale']}, valutazione={fund_ai.get('valutazione','N/D')}
+GEOPOLITICO (score {geo_ai['score']}/10): segnale={geo_ai['segnale']}, rischio={geo_ai.get('rischio_geopolitico','N/D')}
+ECONOMETRICO (score {eco_ai['score']}/10): segnale={eco_ai['segnale']}, trend={eco_ai.get('trend_statistico','N/D')}
+MACROECONOMICO (score {macro_ai['score']}/10): segnale={macro_ai['segnale']}, ciclo={macro_ai.get('ciclo_economico','N/D')}
+Sintetizza tutto in un verdetto finale considerando tutti gli agenti. Rispondi SOLO JSON: {{"score_finale":7,"verdetto":"COMPRA","confidenza":"ALTA","rischio":"MEDIO","sintesi":"250 parole italiano che confronta tutti gli agenti e motiva il verdetto","catalyst_pos":["c1","c2","c3"],"catalyst_neg":["r1","r2","r3"],"prev_1m":"outlook dettagliato","prev_3m":"outlook dettagliato","prev_6m":"outlook dettagliato","prev_1a":"outlook dettagliato","prev_3a":"outlook dettagliato","prev_5a":"outlook dettagliato","accordo_agenti":"TOTALE|MAGGIORANZA|DIVISI","voti":{{"compra":3,"attendi":1,"vendi":1}}}}"""
         ))
 
         return jsonify({
@@ -197,6 +221,9 @@ def analyze(ticker):
             "fund": fund,
             "tech_ai": tech_ai,
             "fund_ai": fund_ai,
+            "geo_ai": geo_ai,
+            "eco_ai": eco_ai,
+            "macro_ai": macro_ai,
             "arb_ai": arb_ai,
             "history": history,
         })
