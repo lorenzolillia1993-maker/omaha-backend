@@ -10,14 +10,14 @@
 <title>OMAHA — Stock Intelligence</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#080d1a;--bg2:#0d1325;--surface:#121930;--surface2:#18213a;--border:#1c2a45;--border2:#243356;--gold:#c9a84c;--gold2:#e8c96a;--cyan:#3dd6f5;--orange:#f07d3a;--green:#2dd4a0;--red:#f05e6a;--purple:#a855f7;--blue:#3b82f6;--teal:#14b8a6;--text:#dde8ff;--dim:#3a5070;--dim2:#6a80a0;--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,20px);}
+:root{--bg:#080d1a;--bg2:#0d1325;--surface:#121930;--surface2:#18213a;--border:#1c2a45;--border2:#243356;--gold:#c9a84c;--gold2:#e8c96a;--cyan:#3dd6f5;--orange:#f07d3a;--green:#2dd4a0;--red:#f05e6a;--purple:#a855f7;--blue:#3b82f6;--teal:#14b8a6;--pink:#ec4899;--yellow:#eab308;--text:#dde8ff;--dim:#3a5070;--dim2:#6a80a0;--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,20px);}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'IBM Plex Mono',monospace;-webkit-font-smoothing:antialiased;}
 .app{display:flex;flex-direction:column;height:100vh;height:100dvh;}
-.safe-top{height:calc(var(--safe-top) + 8px);background:var(--bg);flex-shrink:0;}
+.safe-top{height:calc(var(--safe-top)+8px);background:var(--bg);flex-shrink:0;}
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:8px 18px 12px;flex-shrink:0;border-bottom:1px solid var(--border);background:var(--bg);}
-.logo{font-family:'Playfair Display',serif;font-size:28px;font-weight:900;letter-spacing:4px;background:linear-gradient(135deg,var(--gold),var(--gold2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.logo-sub{font-size:8px;letter-spacing:3px;color:var(--dim2);text-transform:uppercase;}
+.logo{font-family:'Playfair Display',serif;font-size:26px;font-weight:900;letter-spacing:4px;background:linear-gradient(135deg,var(--gold),var(--gold2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.logo-sub{font-size:7px;letter-spacing:2px;color:var(--dim2);text-transform:uppercase;}
 .live-indicator{display:flex;align-items:center;gap:5px;font-size:9px;color:var(--green);letter-spacing:1px;}
 .live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:blink 2s infinite;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
@@ -32,15 +32,15 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .nav-btn.active .nav-icon{filter:drop-shadow(0 0 5px var(--gold));}
 .page-wrap{padding:16px;}
 .sec-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--dim2);margin-bottom:12px;margin-top:4px;}
-.empty-state{text-align:center;padding:50px 20px;}
-.empty-icon{font-size:50px;margin-bottom:14px;}
+.empty-state{text-align:center;padding:40px 20px;}
+.empty-icon{font-size:48px;margin-bottom:14px;}
 .empty-msg{font-size:11px;color:var(--dim2);line-height:1.9;}
 ::-webkit-scrollbar{width:0;}
 
 /* SEARCH */
 .search-bar-wrap{padding:14px 16px 12px;position:sticky;top:0;background:var(--bg);z-index:10;border-bottom:1px solid var(--border);}
-.search-input-row{display:flex;gap:10px;margin-bottom:0;}
-.search-input{flex:1;background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:13px 16px;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:14px;outline:none;transition:border-color 0.2s;}
+.search-input-row{display:flex;gap:10px;}
+.search-input{flex:1;background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:13px 16px;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:14px;outline:none;}
 .search-input:focus{border-color:var(--gold);}
 .search-input::placeholder{color:var(--dim2);font-size:12px;}
 .search-btn{background:var(--gold);border:none;border-radius:12px;padding:13px 16px;color:var(--bg);font-size:16px;cursor:pointer;flex-shrink:0;}
@@ -50,13 +50,13 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .si-ticker{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--gold2);}
 .si-name{font-size:10px;color:var(--dim2);margin-top:2px;}
 .si-exchange{font-size:9px;padding:2px 8px;border-radius:10px;background:var(--surface2);color:var(--dim2);border:1px solid var(--border);}
-.si-btns{display:flex;gap:7px;margin-top:2px;}
+.si-btns{display:flex;gap:7px;}
 .si-btn{flex:1;border:none;border-radius:9px;padding:8px 0;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:1px;cursor:pointer;text-transform:uppercase;}
 .si-btn-analyze{background:linear-gradient(135deg,var(--gold),#8a6020);color:var(--bg);}
 .si-btn-fav{background:rgba(45,212,160,0.15);color:var(--green);border:1px solid rgba(45,212,160,0.3);}
 .si-btn-fav.saved{background:rgba(201,168,76,0.15);color:var(--gold);border:1px solid rgba(201,168,76,0.3);}
 
-/* PREFERITI */
+/* FAVORITES */
 .fav-item{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:13px 14px;margin-bottom:9px;position:relative;overflow:hidden;}
 .fav-item::after{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px;}
 .fav-item.buy::after{background:var(--green);}
@@ -86,66 +86,82 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .go-btn{background:linear-gradient(135deg,var(--gold),#8a6020);border:none;border-radius:12px;padding:13px 18px;color:var(--bg);font-family:'Playfair Display',serif;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:1px;}
 .go-btn:disabled{opacity:0.4;}
 
-/* AGENT TRACK — 6 agenti */
+/* 8 AGENT TRACK */
 .agent-track{display:none;padding:0 16px 10px;}
 .agent-track.show{display:block;}
-.track-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:6px;}
-.track-pill{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:9px 4px;text-align:center;transition:all 0.3s;}
-.track-pill.run-t{border-color:var(--cyan);background:rgba(61,214,245,0.05);animation:gt 1.5s infinite;}
-.track-pill.run-f{border-color:var(--orange);background:rgba(240,125,58,0.05);animation:gf 1.5s infinite;}
-.track-pill.run-g{border-color:var(--purple);background:rgba(168,85,247,0.05);animation:gg 1.5s infinite;}
-.track-pill.run-e{border-color:var(--blue);background:rgba(59,130,246,0.05);animation:ge 1.5s infinite;}
-.track-pill.run-m{border-color:var(--teal);background:rgba(20,184,166,0.05);animation:gm 1.5s infinite;}
-.track-pill.run-a{border-color:var(--gold);background:rgba(201,168,76,0.05);animation:ga 1.5s infinite;}
+.track-row{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:5px;}
+.track-pill{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:8px 3px;text-align:center;transition:all 0.3s;}
+.track-pill.run-t{border-color:var(--cyan);animation:gt 1.5s infinite;}
+.track-pill.run-f{border-color:var(--orange);animation:gf 1.5s infinite;}
+.track-pill.run-g{border-color:var(--purple);animation:gg 1.5s infinite;}
+.track-pill.run-e{border-color:var(--blue);animation:ge 1.5s infinite;}
+.track-pill.run-m{border-color:var(--teal);animation:gm 1.5s infinite;}
+.track-pill.run-mk{border-color:var(--pink);animation:gmk 1.5s infinite;}
+.track-pill.run-tp{border-color:var(--yellow);animation:gtp 1.5s infinite;}
+.track-pill.run-a{border-color:var(--gold);animation:ga 1.5s infinite;}
 .track-pill.done-p{opacity:0.4;}
-@keyframes gt{0%,100%{box-shadow:0 0 5px rgba(61,214,245,0.2)}50%{box-shadow:0 0 16px rgba(61,214,245,0.5)}}
-@keyframes gf{0%,100%{box-shadow:0 0 5px rgba(240,125,58,0.2)}50%{box-shadow:0 0 16px rgba(240,125,58,0.5)}}
-@keyframes gg{0%,100%{box-shadow:0 0 5px rgba(168,85,247,0.2)}50%{box-shadow:0 0 16px rgba(168,85,247,0.5)}}
-@keyframes ge{0%,100%{box-shadow:0 0 5px rgba(59,130,246,0.2)}50%{box-shadow:0 0 16px rgba(59,130,246,0.5)}}
-@keyframes gm{0%,100%{box-shadow:0 0 5px rgba(20,184,166,0.2)}50%{box-shadow:0 0 16px rgba(20,184,166,0.5)}}
-@keyframes ga{0%,100%{box-shadow:0 0 5px rgba(201,168,76,0.2)}50%{box-shadow:0 0 16px rgba(201,168,76,0.5)}}
-.tp-icon{font-size:16px;}
-.tp-name{font-size:7px;font-weight:600;letter-spacing:0.5px;margin-top:3px;}
-.tp-name.t{color:var(--cyan)}.tp-name.f{color:var(--orange)}.tp-name.g{color:var(--purple)}.tp-name.e{color:var(--blue)}.tp-name.m{color:var(--teal)}.tp-name.a{color:var(--gold)}
-.tp-state{font-size:7px;color:var(--dim2);margin-top:2px;}
+@keyframes gt{0%,100%{box-shadow:0 0 4px rgba(61,214,245,0.3)}50%{box-shadow:0 0 14px rgba(61,214,245,0.6)}}
+@keyframes gf{0%,100%{box-shadow:0 0 4px rgba(240,125,58,0.3)}50%{box-shadow:0 0 14px rgba(240,125,58,0.6)}}
+@keyframes gg{0%,100%{box-shadow:0 0 4px rgba(168,85,247,0.3)}50%{box-shadow:0 0 14px rgba(168,85,247,0.6)}}
+@keyframes ge{0%,100%{box-shadow:0 0 4px rgba(59,130,246,0.3)}50%{box-shadow:0 0 14px rgba(59,130,246,0.6)}}
+@keyframes gm{0%,100%{box-shadow:0 0 4px rgba(20,184,166,0.3)}50%{box-shadow:0 0 14px rgba(20,184,166,0.6)}}
+@keyframes gmk{0%,100%{box-shadow:0 0 4px rgba(236,72,153,0.3)}50%{box-shadow:0 0 14px rgba(236,72,153,0.6)}}
+@keyframes gtp{0%,100%{box-shadow:0 0 4px rgba(234,179,8,0.3)}50%{box-shadow:0 0 14px rgba(234,179,8,0.6)}}
+@keyframes ga{0%,100%{box-shadow:0 0 4px rgba(201,168,76,0.3)}50%{box-shadow:0 0 14px rgba(201,168,76,0.6)}}
+.tp-icon{font-size:14px;}
+.tp-name{font-size:6px;font-weight:600;letter-spacing:0.3px;margin-top:2px;}
+.tp-name.t{color:var(--cyan)}.tp-name.f{color:var(--orange)}.tp-name.g{color:var(--purple)}.tp-name.e{color:var(--blue)}.tp-name.m{color:var(--teal)}.tp-name.mk{color:var(--pink)}.tp-name.tp{color:var(--yellow)}.tp-name.a{color:var(--gold)}
+.tp-state{font-size:6px;color:var(--dim2);margin-top:1px;}
 
 /* RESULT */
 .results-area{padding:0 16px;}
 .r-card{background:var(--surface);border:1px solid var(--border);border-radius:17px;margin-bottom:18px;overflow:hidden;}
-.r-head{padding:15px 17px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.r-ticker{font-family:'Playfair Display',serif;font-size:24px;font-weight:900;color:var(--gold2);}
+.r-head{padding:14px 16px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.r-ticker{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:var(--gold2);}
 .r-company{font-size:9px;color:var(--dim2);margin-top:2px;}
-.r-price{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;text-align:right;}
+.r-price{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;text-align:right;}
 .r-change{font-size:10px;margin-top:2px;text-align:right;}
 .r-change.pos{color:var(--green)}.r-change.neg{color:var(--red)}
-.r-verdict-bar{display:flex;align-items:center;justify-content:space-between;padding:11px 17px;border-bottom:1px solid var(--border);background:var(--bg);}
-.r-verdict{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;letter-spacing:1px;}
+.r-verdict-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);background:var(--bg);}
+.r-verdict{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;letter-spacing:1px;}
 .r-verdict.buy{color:var(--green)}.r-verdict.sell{color:var(--red)}.r-verdict.hold{color:var(--gold)}
 .r-conf{font-size:9px;color:var(--dim2);margin-top:2px;}
-.r-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);}
-.r-metric{background:var(--surface);padding:10px 7px;text-align:center;}
-.r-mlabel{font-size:7px;letter-spacing:1px;text-transform:uppercase;color:var(--dim2);margin-bottom:4px;}
+.r-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);}
+.r-metric{background:var(--surface);padding:9px 5px;text-align:center;}
+.r-mlabel{font-size:7px;letter-spacing:1px;text-transform:uppercase;color:var(--dim2);margin-bottom:3px;}
 .r-mval{font-family:'Playfair Display',serif;font-size:13px;font-weight:700;}
-
-/* VOTI AGENTI */
 .votes-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);}
-.vote-box{background:var(--surface);padding:9px 5px;text-align:center;}
-.vote-label{font-size:7px;letter-spacing:1px;text-transform:uppercase;color:var(--dim2);margin-bottom:4px;}
+.vote-box{background:var(--surface);padding:8px 5px;text-align:center;}
+.vote-label{font-size:7px;letter-spacing:1px;color:var(--dim2);margin-bottom:3px;}
 .vote-val{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;}
+
+/* TARGET PRICE BOX */
+.target-box{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
+.tp-box{border-radius:11px;padding:12px;text-align:center;border:1px solid;}
+.tp-box.bull{background:rgba(45,212,160,0.08);border-color:rgba(45,212,160,0.3);}
+.tp-box.base{background:rgba(201,168,76,0.08);border-color:rgba(201,168,76,0.3);}
+.tp-box.bear{background:rgba(240,94,106,0.08);border-color:rgba(240,94,106,0.3);}
+.tp-label{font-size:8px;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
+.tp-bull .tp-label,.tp-box.bull .tp-label{color:var(--green);}
+.tp-box.base .tp-label{color:var(--gold);}
+.tp-box.bear .tp-label{color:var(--red);}
+.tp-price{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;}
+.tp-pct{font-size:10px;margin-top:3px;}
+.tp-prob{font-size:8px;color:var(--dim2);margin-top:3px;}
 
 /* TABS */
 .tabs{display:flex;border-bottom:1px solid var(--border);background:var(--surface2);overflow-x:auto;}
 .tabs::-webkit-scrollbar{display:none;}
-.tab-btn{flex-shrink:0;padding:10px 9px;background:none;border:none;border-bottom:2px solid transparent;color:var(--dim2);font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;white-space:nowrap;}
+.tab-btn{flex-shrink:0;padding:10px 8px;background:none;border:none;border-bottom:2px solid transparent;color:var(--dim2);font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:0.8px;text-transform:uppercase;cursor:pointer;white-space:nowrap;}
 .tab-btn.active{color:var(--gold);border-bottom-color:var(--gold);}
 .tab-content{display:none;}
 .tab-content.active{display:block;}
 .panel{padding:14px;}
 .panel-title{display:flex;align-items:center;gap:7px;margin-bottom:12px;font-size:9px;letter-spacing:2px;text-transform:uppercase;font-weight:600;}
-.pt-t{color:var(--cyan)}.pt-f{color:var(--orange)}.pt-g{color:var(--purple)}.pt-e{color:var(--blue)}.pt-m{color:var(--teal)}.pt-a{color:var(--gold)}
+.pt-t{color:var(--cyan)}.pt-f{color:var(--orange)}.pt-g{color:var(--purple)}.pt-e{color:var(--blue)}.pt-m{color:var(--teal)}.pt-mk{color:var(--pink)}.pt-tp{color:var(--yellow)}.pt-a{color:var(--gold)}
 .score-row{display:flex;align-items:baseline;gap:5px;margin-bottom:7px;}
-.score-big{font-family:'Playfair Display',serif;font-size:40px;font-weight:900;line-height:1;}
-.sb-t{color:var(--cyan)}.sb-f{color:var(--orange)}.sb-g{color:var(--purple)}.sb-e{color:var(--blue)}.sb-m{color:var(--teal)}
+.score-big{font-family:'Playfair Display',serif;font-size:38px;font-weight:900;line-height:1;}
+.sb-t{color:var(--cyan)}.sb-f{color:var(--orange)}.sb-g{color:var(--purple)}.sb-e{color:var(--blue)}.sb-m{color:var(--teal)}.sb-mk{color:var(--pink)}.sb-tp{color:var(--yellow)}
 .score-den{color:var(--dim2);font-size:14px;}
 .score-bar{height:3px;background:var(--border2);border-radius:2px;margin-bottom:12px;overflow:hidden;}
 .score-fill{height:100%;border-radius:2px;transition:width 1.2s ease;}
@@ -154,36 +170,46 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .sf-g{background:linear-gradient(90deg,var(--purple),#7e22ce);}
 .sf-e{background:linear-gradient(90deg,var(--blue),#1d4ed8);}
 .sf-m{background:linear-gradient(90deg,var(--teal),#0f766e);}
+.sf-mk{background:linear-gradient(90deg,var(--pink),#be185d);}
+.sf-tp{background:linear-gradient(90deg,var(--yellow),#a16207);}
 .tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;}
 .tag{font-size:8px;padding:3px 9px;border-radius:20px;background:var(--surface2);color:var(--dim2);border:1px solid var(--border);}
 .analysis-text{font-size:11px;line-height:1.9;color:#8aa0c0;}
 .divider{height:1px;background:var(--border);margin:12px 0;}
-
-/* PREVISIONI TEMPORALI */
-.forecast-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.forecast-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px;}
 .fc-box{background:var(--bg);border:1px solid var(--border2);border-radius:10px;padding:10px;}
-.fc-period{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim2);margin-bottom:5px;}
+.fc-period{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim2);margin-bottom:4px;}
 .fc-text{font-size:10px;line-height:1.7;color:#7a90b0;}
-
-/* ARBI COMPARE */
-.arb-compare{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px;}
-.arb-box{background:var(--bg);border-radius:10px;padding:10px;text-align:center;}
-.arb-box-label{font-size:7px;letter-spacing:1px;text-transform:uppercase;color:var(--dim2);margin-bottom:4px;}
-.arb-box-val{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;}
-
-/* CHART */
+.arb-compare{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:12px;}
+.arb-box{background:var(--bg);border-radius:9px;padding:9px;text-align:center;}
+.arb-box-label{font-size:7px;letter-spacing:0.8px;text-transform:uppercase;color:var(--dim2);margin-bottom:4px;}
+.arb-box-val{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;}
 .chart-wrap{width:100%;height:130px;position:relative;margin-bottom:12px;}
 canvas{width:100%!important;height:100%!important;}
-
-/* FIN TABLE */
 .fin-table{width:100%;border-collapse:collapse;font-size:10px;}
-.fin-table th{text-align:left;padding:6px 5px;color:var(--dim2);font-size:8px;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border);}
+.fin-table th{text-align:left;padding:6px 5px;color:var(--dim2);font-size:8px;border-bottom:1px solid var(--border);}
 .fin-table td{padding:7px 5px;border-bottom:1px solid var(--border);}
 .fin-table tr:last-child td{border-bottom:none;}
 .fin-table .yr{color:var(--gold);font-weight:600;}
 .fin-table .pos{color:var(--green)}.fin-table .neg{color:var(--red)}
 
-/* TOAST */
+/* CHIARIMENTI */
+.clarify-section{margin:0 16px 16px;background:var(--surface);border:1px solid var(--border2);border-radius:14px;overflow:hidden;}
+.clarify-header{padding:12px 16px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.clarify-title{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:600;}
+.clarify-messages{padding:12px 16px;max-height:300px;overflow-y:auto;}
+.clarify-msg{margin-bottom:12px;}
+.clarify-msg-q{background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);border-radius:10px;padding:10px 12px;font-size:11px;color:var(--gold2);margin-bottom:6px;}
+.clarify-msg-a{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:11px;color:#8aa0c0;line-height:1.8;}
+.clarify-msg-loading{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:11px;color:var(--dim2);animation:pulse-text 1.5s infinite;}
+@keyframes pulse-text{0%,100%{opacity:0.5}50%{opacity:1}}
+.clarify-input-row{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--border);}
+.clarify-input{flex:1;background:var(--bg);border:1px solid var(--border2);border-radius:10px;padding:10px 12px;color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:12px;outline:none;resize:none;min-height:40px;}
+.clarify-input:focus{border-color:var(--gold);}
+.clarify-input::placeholder{color:var(--dim2);font-size:11px;}
+.clarify-send{background:var(--gold);border:none;border-radius:10px;padding:10px 14px;color:var(--bg);font-size:16px;cursor:pointer;flex-shrink:0;align-self:flex-end;}
+.clarify-send:disabled{opacity:0.4;}
+
 .toast{position:fixed;bottom:calc(70px + var(--safe-bottom));left:50%;transform:translateX(-50%) translateY(14px);background:var(--surface2);border:1px solid var(--border2);border-radius:30px;padding:9px 18px;font-size:11px;opacity:0;transition:all 0.3s;pointer-events:none;white-space:nowrap;z-index:999;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 .error-box{background:rgba(240,94,106,0.07);border:1px solid rgba(240,94,106,0.25);border-radius:12px;padding:13px;color:var(--red);font-size:11px;line-height:1.7;margin-bottom:12px;}
@@ -193,7 +219,7 @@ canvas{width:100%!important;height:100%!important;}
 <div class="app">
   <div class="safe-top"></div>
   <div class="topbar">
-    <div><div class="logo">OMAHA</div><div class="logo-sub">6-Agent Intelligence</div></div>
+    <div><div class="logo">OMAHA</div><div class="logo-sub">8-Agent Intelligence System</div></div>
     <div class="live-indicator"><div class="live-dot"></div>LIVE</div>
   </div>
   <div class="pages">
@@ -202,12 +228,12 @@ canvas{width:100%!important;height:100%!important;}
     <div class="page active" id="page-search">
       <div class="search-bar-wrap">
         <div class="search-input-row">
-          <input class="search-input" id="searchInput" type="text" placeholder="Cerca per nome o ticker (es. Apple, AAPL, ENI...)" oninput="searchDebounce()">
+          <input class="search-input" id="searchInput" type="text" placeholder="Cerca azione: Apple, AAPL, ENI, Ferrari..." oninput="searchDebounce()">
           <button class="search-btn" onclick="doSearch()">🔍</button>
         </div>
       </div>
       <div class="stock-list" id="stockList">
-        <div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-msg">Cerca qualsiasi azione nel mondo.<br>Es: Apple, Tesla, ENI, Ferrari...</div></div>
+        <div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-msg">Cerca qualsiasi azione nel mondo.<br>Risultati in tempo reale da Yahoo Finance.</div></div>
       </div>
     </div>
 
@@ -222,9 +248,9 @@ canvas{width:100%!important;height:100%!important;}
     <!-- ANALIZZA -->
     <div class="page" id="page-analyze">
       <div class="analyze-top">
-        <div class="sec-label">// Analisi 6 agenti AI — dati reali</div>
+        <div class="sec-label">// Analisi 8 agenti AI specializzati</div>
         <div class="analyze-row">
-          <input class="analyze-input" id="analyzeInput" type="text" placeholder="Es: AAPL o ENI.MI" maxlength="12" onkeydown="if(event.key==='Enter')runAnalysis()">
+          <input class="analyze-input" id="analyzeInput" type="text" placeholder="Ticker (es: AAPL, ENI.MI)" maxlength="12" onkeydown="if(event.key==='Enter')runAnalysis()">
           <button class="go-btn" id="goBtn" onclick="runAnalysis()">▶ GO</button>
         </div>
       </div>
@@ -233,15 +259,17 @@ canvas{width:100%!important;height:100%!important;}
           <div class="track-pill" id="pill-t"><div class="tp-icon">📊</div><div class="tp-name t">TECNICO</div><div class="tp-state" id="pst-t">—</div></div>
           <div class="track-pill" id="pill-f"><div class="tp-icon">📈</div><div class="tp-name f">FONDAMENTALE</div><div class="tp-state" id="pst-f">—</div></div>
           <div class="track-pill" id="pill-g"><div class="tp-icon">🌍</div><div class="tp-name g">GEOPOLITICO</div><div class="tp-state" id="pst-g">—</div></div>
+          <div class="track-pill" id="pill-e"><div class="tp-icon">📉</div><div class="tp-name e">ECONOMETRICO</div><div class="tp-state" id="pst-e">—</div></div>
         </div>
         <div class="track-row">
-          <div class="track-pill" id="pill-e"><div class="tp-icon">📉</div><div class="tp-name e">ECONOMETRICO</div><div class="tp-state" id="pst-e">—</div></div>
           <div class="track-pill" id="pill-m"><div class="tp-icon">🏦</div><div class="tp-name m">MACRO</div><div class="tp-state" id="pst-m">—</div></div>
+          <div class="track-pill" id="pill-mk"><div class="tp-icon">🏪</div><div class="tp-name mk">MERCATO</div><div class="tp-state" id="pst-mk">—</div></div>
+          <div class="track-pill" id="pill-tp"><div class="tp-icon">🎯</div><div class="tp-name tp">TARGET PRICE</div><div class="tp-state" id="pst-tp">—</div></div>
           <div class="track-pill" id="pill-a"><div class="tp-icon">⚖️</div><div class="tp-name a">ARBITRO</div><div class="tp-state" id="pst-a">—</div></div>
         </div>
       </div>
       <div class="results-area" id="resultsArea">
-        <div class="empty-state"><div class="empty-icon">🏛️</div><div class="empty-msg">6 agenti AI analizzeranno il titolo:<br>📊 Tecnico · 📈 Fondamentale<br>🌍 Geopolitico · 📉 Econometrico<br>🏦 Macroeconomico · ⚖️ Arbitro</div></div>
+        <div class="empty-state"><div class="empty-icon">🏛️</div><div class="empty-msg">8 agenti AI analizzeranno il titolo:<br><br>📊 Tecnico · 📈 Fondamentale · 🌍 Geopolitico<br>📉 Econometrico · 🏦 Macro · 🏪 Mercato<br>🎯 Target Price · ⚖️ Arbitro Finale</div></div>
       </div>
     </div>
 
@@ -262,16 +290,20 @@ canvas{width:100%!important;height:100%!important;}
   </nav>
 </div>
 <div class="toast" id="toast"></div>
+
 <script>
-let favorites = JSON.parse(localStorage.getItem('omaha_fav') || '[]');
-let savedAnalyses = JSON.parse(localStorage.getItem('omaha_analyses') || '{}');
-let historyArr = JSON.parse(localStorage.getItem('omaha_history') || '[]');
+let favorites = JSON.parse(localStorage.getItem('omaha_fav2') || '[]');
+let savedAnalyses = JSON.parse(localStorage.getItem('omaha_analyses2') || '{}');
+let historyArr = JSON.parse(localStorage.getItem('omaha_history2') || '[]');
 let searchTimer = null;
+let currentTicker = null;
+let currentHistoryQA = [];
+let currentAnalysis = null;
 
 function persist() {
-  localStorage.setItem('omaha_fav', JSON.stringify(favorites));
-  localStorage.setItem('omaha_analyses', JSON.stringify(savedAnalyses));
-  localStorage.setItem('omaha_history', JSON.stringify(historyArr));
+  localStorage.setItem('omaha_fav2', JSON.stringify(favorites));
+  localStorage.setItem('omaha_analyses2', JSON.stringify(savedAnalyses));
+  localStorage.setItem('omaha_history2', JSON.stringify(historyArr));
 }
 
 function goPage(name) {
@@ -281,71 +313,55 @@ function goPage(name) {
   document.getElementById(`nav-${name}`).classList.add('active');
 }
 
-function toast(msg, col='var(--text)') {
+function toast(msg,col='var(--text)') {
   const t=document.getElementById('toast');
   t.textContent=msg; t.style.color=col;
   t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 2500);
+  setTimeout(()=>t.classList.remove('show'),2500);
 }
 
 function getVC(v) {
   if(!v) return 'none';
   const u=v.toUpperCase();
-  if(u.includes('COMPRA')) return 'buy';
-  if(u.includes('VENDI')) return 'sell';
+  if(u.includes('COMPRA')||u.includes('BUY')) return 'buy';
+  if(u.includes('VENDI')||u.includes('SELL')) return 'sell';
   return 'hold';
 }
 
-function fmtB(n) {
-  if(!n||isNaN(n)) return '—';
-  const a=Math.abs(n);
-  if(a>=1e9) return (n/1e9).toFixed(1)+'B';
-  if(a>=1e6) return (n/1e6).toFixed(1)+'M';
-  return n.toLocaleString();
-}
+function fmtB(n){if(!n||isNaN(n))return'—';const a=Math.abs(n);if(a>=1e9)return(n/1e9).toFixed(1)+'B';if(a>=1e6)return(n/1e6).toFixed(1)+'M';return n.toLocaleString();}
 function pct(v){return v?(v*100).toFixed(1)+'%':'—';}
 function colorC(v){return v>0?'pos':v<0?'neg':'';}
+function fmtPct(a,b){if(!a||!b||b===0)return'—';return((a/b-1)*100).toFixed(1)+'%';}
 
-function setPill(id, cls, state) {
+function setPill(id,cls,state){
   document.getElementById(`pill-${id}`).className=`track-pill ${cls}`;
   document.getElementById(`pst-${id}`).textContent=state;
 }
 
-// ── SEARCH LIVE ──
-function searchDebounce() {
-  clearTimeout(searchTimer);
-  searchTimer = setTimeout(doSearch, 400);
-}
+// SEARCH
+function searchDebounce(){clearTimeout(searchTimer);searchTimer=setTimeout(doSearch,400);}
 
-async function doSearch() {
-  const q = document.getElementById('searchInput').value.trim();
-  const list = document.getElementById('stockList');
-  if(q.length < 1) {
-    list.innerHTML='<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-msg">Cerca qualsiasi azione nel mondo.<br>Es: Apple, Tesla, ENI, Ferrari...</div></div>';
-    return;
-  }
+async function doSearch(){
+  const q=document.getElementById('searchInput').value.trim();
+  const list=document.getElementById('stockList');
+  if(q.length<1){list.innerHTML='<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-msg">Cerca qualsiasi azione nel mondo.<br>Risultati in tempo reale da Yahoo Finance.</div></div>';return;}
   list.innerHTML='<div class="empty-state"><div class="empty-icon">⏳</div><div class="empty-msg">Ricerca in corso...</div></div>';
-  try {
-    const r = await fetch(`/search?q=${encodeURIComponent(q)}`);
-    const data = await r.json();
-    if(!data.length) {
-      list.innerHTML='<div class="empty-state"><div class="empty-icon">🔎</div><div class="empty-msg">Nessun risultato per "'+q+'"</div></div>';
-      return;
-    }
+  try{
+    const r=await fetch(`/search?q=${encodeURIComponent(q)}`);
+    const data=await r.json();
+    if(!data.length){list.innerHTML='<div class="empty-state"><div class="empty-icon">🔎</div><div class="empty-msg">Nessun risultato per "'+q+'"</div></div>';return;}
     renderSearchResults(data);
-  } catch(e) {
-    list.innerHTML=`<div class="error-box">⚠ Errore ricerca: ${e.message}</div>`;
-  }
+  }catch(e){list.innerHTML=`<div class="error-box">⚠ Errore: ${e.message}</div>`;}
 }
 
-function renderSearchResults(stocks) {
-  const list = document.getElementById('stockList');
+function renderSearchResults(stocks){
+  const list=document.getElementById('stockList');
   const chips={buy:'chip-buy',sell:'chip-sell',hold:'chip-hold',none:'chip-none'};
   const labels={buy:'COMPRA',sell:'VENDI',hold:'ATTENDI',none:'—'};
-  list.innerHTML = stocks.map(s => {
-    const a = savedAnalyses[s.ticker];
-    const vc = a ? getVC(a.verdetto) : 'none';
-    const isFav = favorites.find(f=>f.ticker===s.ticker);
+  list.innerHTML=stocks.map(s=>{
+    const a=savedAnalyses[s.ticker];
+    const vc=a?getVC(a.verdetto):'none';
+    const isFav=favorites.find(f=>f.ticker===s.ticker);
     return `<div class="stock-item">
       <div class="si-top">
         <div>
@@ -357,58 +373,35 @@ function renderSearchResults(stocks) {
       </div>
       <div class="si-btns">
         <button class="si-btn si-btn-analyze" onclick="analyzeStock('${s.ticker}')">▶ Analizza</button>
-        <button class="si-btn si-btn-fav ${isFav?'saved':''}" onclick="toggleFav('${s.ticker}','${s.name.replace(/'/g,'').slice(0,30)}',this)">${isFav?'⭐ Salvato':'+ Preferiti'}</button>
+        <button class="si-btn si-btn-fav ${isFav?'saved':''}" id="favbtn_${s.ticker.replace('.','_')}" onclick="toggleFav('${s.ticker}','${(s.name||s.ticker).replace(/'/g,'').slice(0,30)}',this)">${isFav?'⭐ Salvato':'+ Preferiti'}</button>
       </div>
     </div>`;
   }).join('');
 }
 
-// ── FAVORITES ──
-function toggleFav(ticker, name, btn) {
-  const idx = favorites.findIndex(f=>f.ticker===ticker);
-  if(idx >= 0) {
-    favorites.splice(idx, 1);
-    btn.textContent='+ Preferiti';
-    btn.classList.remove('saved');
-    toast(`${ticker} rimosso dai preferiti`,'var(--red)');
-  } else {
-    favorites.push({ticker, name, emoji:'⭐'});
-    btn.textContent='⭐ Salvato';
-    btn.classList.add('saved');
-    toast(`✓ ${ticker} aggiunto ai preferiti`,'var(--green)');
-  }
+// FAVORITES
+function toggleFav(ticker,name,btn){
+  const idx=favorites.findIndex(f=>f.ticker===ticker);
+  if(idx>=0){favorites.splice(idx,1);btn.textContent='+ Preferiti';btn.classList.remove('saved');toast(`${ticker} rimosso`,'var(--red)');}
+  else{favorites.push({ticker,name,emoji:'⭐'});btn.textContent='⭐ Salvato';btn.classList.add('saved');toast(`✓ ${ticker} aggiunto ai preferiti`,'var(--green)');}
   persist();
 }
 
-function removeFav(idx) {
-  const ticker = favorites[idx].ticker;
-  favorites.splice(idx, 1);
-  persist(); renderFavorites();
-  toast(`${ticker} rimosso`,'var(--red)');
-}
+function removeFav(idx){const ticker=favorites[idx].ticker;favorites.splice(idx,1);persist();renderFavorites();toast(`${ticker} rimosso`,'var(--red)');}
 
-function renderFavorites() {
-  const grid = document.getElementById('favGrid');
-  if(!favorites.length) {
-    grid.innerHTML='<div class="empty-state"><div class="empty-icon">⭐</div><div class="empty-msg">Nessun preferito ancora.<br>Cercali nella pagina Cerca<br>e premi "+ Preferiti".</div></div>';
-    return;
-  }
+function renderFavorites(){
+  const grid=document.getElementById('favGrid');
+  if(!favorites.length){grid.innerHTML='<div class="empty-state"><div class="empty-icon">⭐</div><div class="empty-msg">Nessun preferito ancora.<br>Cercali e premi "+ Preferiti".</div></div>';return;}
   const chips={buy:'chip-buy',sell:'chip-sell',hold:'chip-hold',none:'chip-none'};
   const labels={buy:'COMPRA',sell:'VENDI',hold:'ATTENDI',none:'—'};
-  grid.innerHTML = favorites.map((s,i) => {
-    const a = savedAnalyses[s.ticker];
-    const vc = a ? getVC(a.verdetto) : 'none';
+  grid.innerHTML=favorites.map((s,i)=>{
+    const a=savedAnalyses[s.ticker];
+    const vc=a?getVC(a.verdetto):'none';
     return `<div class="fav-item ${vc}">
       <div class="fav-top">
         <div class="fav-icon">${s.emoji||'⭐'}</div>
-        <div class="fav-info">
-          <div class="fav-ticker">${s.ticker}</div>
-          <div class="fav-name">${s.name||s.ticker}</div>
-        </div>
-        <div>
-          <div class="fav-chip ${chips[vc]}">${labels[vc]}</div>
-          ${a?`<div style="font-size:8px;color:var(--dim2);margin-top:3px;text-align:right">Score ${a.score}/10</div>`:''}
-        </div>
+        <div class="fav-info"><div class="fav-ticker">${s.ticker}</div><div class="fav-name">${s.name||s.ticker}</div></div>
+        <div><div class="fav-chip ${chips[vc]}">${labels[vc]}</div>${a?`<div style="font-size:8px;color:var(--dim2);margin-top:3px;text-align:right">Score ${a.score}/10</div>`:''}</div>
       </div>
       <div class="fav-btns">
         <button class="fav-btn-analyze" onclick="analyzeStock('${s.ticker}')">▶ ANALIZZA ORA</button>
@@ -418,36 +411,34 @@ function renderFavorites() {
   }).join('');
 }
 
-function analyzeStock(ticker) {
-  document.getElementById('analyzeInput').value = ticker;
+function analyzeStock(ticker){
+  document.getElementById('analyzeInput').value=ticker;
   goPage('analyze');
   runAnalysis();
 }
 
-// ── HISTORY ──
-function renderHistory() {
-  const el = document.getElementById('historyList');
+// HISTORY
+function renderHistory(){
+  const el=document.getElementById('historyList');
   if(!historyArr.length){el.innerHTML='<div class="empty-state"><div class="empty-icon">📂</div><div class="empty-msg">Nessuna analisi salvata.</div></div>';return;}
   const chips={buy:'chip-buy',sell:'chip-sell',hold:'chip-hold'};
-  el.innerHTML = historyArr.map(h=>{
+  el.innerHTML=historyArr.map(h=>{
     const vc=getVC(h.verdetto);
     return `<div class="fav-item ${vc}">
       <div class="fav-top">
         <div class="fav-icon">📋</div>
-        <div class="fav-info"><div class="fav-ticker">${h.ticker}</div><div class="fav-name">${h.date} · $${h.price}</div></div>
+        <div class="fav-info"><div class="fav-ticker">${h.ticker}</div><div class="fav-name">${h.date} · ${h.price}</div></div>
         <div><div class="fav-chip ${chips[vc]||'chip-none'}">${h.verdetto||'—'}</div><div style="font-size:8px;color:var(--dim2);margin-top:3px;text-align:right">Score ${h.score}/10</div></div>
       </div>
-      <div class="fav-btns">
-        <button class="fav-btn-analyze" onclick="analyzeStock('${h.ticker}')">▶ RIANALIZZA</button>
-      </div>
+      <div class="fav-btns"><button class="fav-btn-analyze" onclick="analyzeStock('${h.ticker}')">▶ RIANALIZZA</button></div>
     </div>`;
   }).join('');
 }
 
-// ── CHART ──
-function drawChart(canvasId, prices) {
+// CHART
+function drawChart(canvasId,prices){
   const canvas=document.getElementById(canvasId);
-  if(!canvas||!prices||prices.length<2) return;
+  if(!canvas||!prices||prices.length<2)return;
   const ctx=canvas.getContext('2d');
   const W=canvas.offsetWidth,H=canvas.offsetHeight;
   canvas.width=W;canvas.height=H;
@@ -477,31 +468,30 @@ function switchTab(uid,tab,btn){
   if(tab==='chart'){setTimeout(()=>{const c=document.getElementById(`cv_${uid}`);if(c&&c._prices)drawChart(`cv_${uid}`,c._prices);},60);}
 }
 
-// ── FORECAST BLOCK ──
-function forecastBlock(ai) {
-  const periods = [
-    {key:'prev_1m',label:'1 Mese'},
-    {key:'prev_3m',label:'3 Mesi'},
-    {key:'prev_6m',label:'6 Mesi'},
-    {key:'prev_1a',label:'1 Anno'},
-    {key:'prev_3a',label:'3 Anni'},
-    {key:'prev_5a',label:'5 Anni'},
-  ];
-  return `<div class="forecast-grid">${periods.map(p=>`
-    <div class="fc-box">
-      <div class="fc-period">${p.label}</div>
-      <div class="fc-text">${ai[p.key]||'—'}</div>
-    </div>`).join('')}</div>`;
+function forecastBlock(ai){
+  const periods=[{key:'prev_1m',label:'1 Mese'},{key:'prev_3m',label:'3 Mesi'},{key:'prev_6m',label:'6 Mesi'},{key:'prev_1a',label:'1 Anno'},{key:'prev_3a',label:'3 Anni'},{key:'prev_5a',label:'5 Anni'}];
+  return `<div class="forecast-grid">${periods.map(p=>`<div class="fc-box"><div class="fc-period">${p.label}</div><div class="fc-text">${ai[p.key]||'—'}</div></div>`).join('')}</div>`;
 }
 
-// ── BUILD CARD ──
-function buildCard(ticker, quote, tech, fund, tech_ai, fund_ai, geo_ai, eco_ai, macro_ai, arb_ai, history) {
+// BUILD CARD
+function buildCard(ticker,quote,tech,fund,tech_ai,fund_ai,geo_ai,eco_ai,macro_ai,market_ai,target_ai,arb_ai,history){
   const vc=getVC(arb_ai.verdetto);
   const uid=`rc_${ticker.replace('.','_')}_${Date.now()}`;
   const changePos=quote?parseFloat(quote.change)>=0:true;
-  const voti = arb_ai.voti || {};
+  const voti=arb_ai.voti||{};
+  const curSymbol=quote?.currency==='EUR'?'€':'$';
 
-  let finHTML='<div style="font-size:10px;color:var(--dim2)">Dati bilancio non disponibili.</div>';
+  // Target price boxes
+  const tp1a_base=target_ai.target_base_1a||0;
+  const tp1a_bull=target_ai.target_bull_1a||0;
+  const tp1a_bear=target_ai.target_bear_1a||0;
+  const curPrice=quote?.price||0;
+  const upBase=curPrice?((tp1a_base/curPrice-1)*100).toFixed(1):0;
+  const upBull=curPrice?((tp1a_bull/curPrice-1)*100).toFixed(1):0;
+  const upBear=curPrice?((tp1a_bear/curPrice-1)*100).toFixed(1):0;
+
+  // Fin table
+  let finHTML='<div style="font-size:10px;color:var(--dim2)">Dati non disponibili.</div>';
   if(fund&&fund.income&&fund.income.length){
     finHTML=`<table class="fin-table"><thead><tr><th>Anno</th><th>Ricavi</th><th>Utile</th><th>Margine</th></tr></thead><tbody>
     ${fund.income.map(r=>`<tr><td class="yr">${r.year}</td><td>${fmtB(r.revenue)}</td><td class="${colorC(r.netIncome)}">${fmtB(r.netIncome)}</td><td>${r.margin!=null?r.margin+'%':'—'}</td></tr>`).join('')}
@@ -515,14 +505,10 @@ function buildCard(ticker, quote, tech, fund, tech_ai, fund_ai, geo_ai, eco_ai, 
     ${fund.dividendYield?`<div class="arb-box"><div class="arb-box-label">Div Yield</div><div class="arb-box-val" style="color:var(--green)">${pct(fund.dividendYield)}</div></div>`:''}
     </div>`;
   }
-
   let divHTML='<div style="font-size:10px;color:var(--dim2)">Nessun dividendo.</div>';
   if(fund&&fund.dividends&&fund.dividends.length){
-    divHTML=fund.dividends.map(d=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)">
-    <span style="font-size:10px;color:var(--gold)">${d.date?.slice(0,7)||'—'}</span>
-    <span style="font-size:11px;color:var(--green)">$${d.amount}</span></div>`).join('');
+    divHTML=fund.dividends.map(d=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)"><span style="font-size:10px;color:var(--gold)">${d.date?.slice(0,7)||'—'}</span><span style="font-size:11px;color:var(--green)">${curSymbol}${d.amount}</span></div>`).join('');
   }
-
   let chartHTML='<div style="font-size:10px;color:var(--dim2)">Storico non disponibile.</div>';
   if(history&&history.length>2){
     const prices=history.map(p=>parseFloat(p.price));
@@ -531,12 +517,10 @@ function buildCard(ticker, quote, tech, fund, tech_ai, fund_ai, geo_ai, eco_ai, 
     const varP=((prices[prices.length-1]/prices[0]-1)*100).toFixed(1);
     const isPos=parseFloat(varP)>=0;
     chartHTML=`<div class="chart-wrap"><canvas id="cv_${uid}"></canvas></div>
-    <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--dim2);margin-bottom:12px">
-      <span>${history[0]?.date?.slice(0,7)||''}</span><span>${history[history.length-1]?.date?.slice(0,7)||''}</span>
-    </div>
+    <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--dim2);margin-bottom:12px"><span>${history[0]?.date?.slice(0,7)||''}</span><span>${history[history.length-1]?.date?.slice(0,7)||''}</span></div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px">
-      <div class="arb-box"><div class="arb-box-label">Min 5a</div><div class="arb-box-val" style="font-size:14px;color:var(--red)">$${minP}</div></div>
-      <div class="arb-box"><div class="arb-box-label">Max 5a</div><div class="arb-box-val" style="font-size:14px;color:var(--green)">$${maxP}</div></div>
+      <div class="arb-box"><div class="arb-box-label">Min 5a</div><div class="arb-box-val" style="font-size:14px;color:var(--red)">${curSymbol}${minP}</div></div>
+      <div class="arb-box"><div class="arb-box-label">Max 5a</div><div class="arb-box-val" style="font-size:14px;color:var(--green)">${curSymbol}${maxP}</div></div>
       <div class="arb-box"><div class="arb-box-label">Var. 5a</div><div class="arb-box-val" style="font-size:14px;color:${isPos?'var(--green)':'var(--red)'}">${varP}%</div></div>
     </div>`;
   }
@@ -544,14 +528,17 @@ function buildCard(ticker, quote, tech, fund, tech_ai, fund_ai, geo_ai, eco_ai, 
   return `<div class="r-card" id="${uid}">
     <div class="r-head">
       <div><div class="r-ticker">${ticker}</div><div class="r-company">${fund?.name||ticker} · ${fund?.sector||'—'}</div></div>
-      <div>${quote?`<div class="r-price">${quote.currency==='EUR'?'€':'$'}${quote.price}</div><div class="r-change ${changePos?'pos':'neg'}">${changePos?'▲':'▼'} ${Math.abs(quote.change)} (${Math.abs(quote.changePct)}%)</div>`:'<div style="font-size:10px;color:var(--dim2)">N/D</div>'}</div>
+      <div>${quote?`<div class="r-price">${curSymbol}${quote.price}</div><div class="r-change ${changePos?'pos':'neg'}">${changePos?'▲':'▼'} ${Math.abs(quote.change)} (${Math.abs(quote.changePct)}%)</div>`:'<div style="font-size:10px;color:var(--dim2)">N/D</div>'}</div>
     </div>
     <div class="r-verdict-bar">
       <div><div class="r-verdict ${vc}">${arb_ai.verdetto}</div><div class="r-conf">Conf: ${arb_ai.confidenza} · Rischio: ${arb_ai.rischio}</div></div>
-      <div style="text-align:right">
-        <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--gold)">${arb_ai.score_finale}/10</div>
-        <div style="font-size:9px;color:var(--dim2)">${arb_ai.accordo_agenti||'—'}</div>
-      </div>
+      <div style="text-align:right"><div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--gold)">${arb_ai.score_finale}/10</div><div style="font-size:9px;color:var(--dim2)">${target_ai.rating||'—'}</div></div>
+    </div>
+    <div class="r-metrics">
+      <div class="r-metric"><div class="r-mlabel">🎯 Target Base</div><div class="r-mval" style="color:var(--gold)">${curSymbol}${tp1a_base}</div></div>
+      <div class="r-metric"><div class="r-mlabel">🟢 Scenario Bull</div><div class="r-mval" style="color:var(--green)">${curSymbol}${tp1a_bull}</div></div>
+      <div class="r-metric"><div class="r-mlabel">🔴 Scenario Bear</div><div class="r-mval" style="color:var(--red)">${curSymbol}${tp1a_bear}</div></div>
+      <div class="r-metric"><div class="r-mlabel">📊 Score AI</div><div class="r-mval" style="color:var(--gold)">${arb_ai.score_finale}/10</div></div>
     </div>
     <div class="votes-row">
       <div class="vote-box"><div class="vote-label">🟢 Compra</div><div class="vote-val" style="color:var(--green)">${voti.compra||0}</div></div>
@@ -560,25 +547,29 @@ function buildCard(ticker, quote, tech, fund, tech_ai, fund_ai, geo_ai, eco_ai, 
     </div>
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('${uid}','arb',this)">⚖️ Verdetto</button>
+      <button class="tab-btn" onclick="switchTab('${uid}','target',this)">🎯 Target</button>
       <button class="tab-btn" onclick="switchTab('${uid}','prev',this)">🔮 Previsioni</button>
       <button class="tab-btn" onclick="switchTab('${uid}','tech',this)">📊 Tecnico</button>
       <button class="tab-btn" onclick="switchTab('${uid}','fund',this)">📈 Bilanci</button>
       <button class="tab-btn" onclick="switchTab('${uid}','geo',this)">🌍 Geo</button>
-      <button class="tab-btn" onclick="switchTab('${uid}','eco',this)">📉 Econom.</button>
+      <button class="tab-btn" onclick="switchTab('${uid}','eco',this)">📉 Econ.</button>
       <button class="tab-btn" onclick="switchTab('${uid}','macro',this)">🏦 Macro</button>
+      <button class="tab-btn" onclick="switchTab('${uid}','market',this)">🏪 Mercato</button>
       <button class="tab-btn" onclick="switchTab('${uid}','chart',this)">📉 Storico</button>
     </div>
 
     <!-- VERDETTO -->
     <div class="tab-content active" id="${uid}_arb">
       <div class="panel">
-        <div class="panel-title pt-a">⚖️ Sintesi Arbitro — 6 Agenti</div>
+        <div class="panel-title pt-a">⚖️ Sintesi Arbitro — 8 Agenti</div>
         <div class="arb-compare">
           <div class="arb-box"><div class="arb-box-label">Tecnico</div><div class="arb-box-val" style="color:var(--cyan)">${tech_ai.score}/10</div></div>
           <div class="arb-box"><div class="arb-box-label">Fondamentale</div><div class="arb-box-val" style="color:var(--orange)">${fund_ai.score}/10</div></div>
           <div class="arb-box"><div class="arb-box-label">Geopolitico</div><div class="arb-box-val" style="color:var(--purple)">${geo_ai.score}/10</div></div>
           <div class="arb-box"><div class="arb-box-label">Econometrico</div><div class="arb-box-val" style="color:var(--blue)">${eco_ai.score}/10</div></div>
           <div class="arb-box"><div class="arb-box-label">Macro</div><div class="arb-box-val" style="color:var(--teal)">${macro_ai.score}/10</div></div>
+          <div class="arb-box"><div class="arb-box-label">Mercato</div><div class="arb-box-val" style="color:var(--pink)">${market_ai.score}/10</div></div>
+          <div class="arb-box"><div class="arb-box-label">Target</div><div class="arb-box-val" style="color:var(--yellow)">${target_ai.score}/10</div></div>
           <div class="arb-box"><div class="arb-box-label">FINALE</div><div class="arb-box-val" style="color:var(--gold)">${arb_ai.score_finale}/10</div></div>
         </div>
         <div class="analysis-text" style="margin-bottom:12px">${arb_ai.sintesi}</div>
@@ -587,17 +578,62 @@ function buildCard(ticker, quote, tech, fund, tech_ai, fund_ai, geo_ai, eco_ai, 
       </div>
     </div>
 
-    <!-- PREVISIONI TEMPORALI -->
+    <!-- TARGET PRICE -->
+    <div class="tab-content" id="${uid}_target">
+      <div class="panel">
+        <div class="panel-title pt-tp">🎯 Target Price — Agente Specializzato</div>
+        <div style="font-size:9px;color:var(--dim2);margin-bottom:12px">Prezzo attuale: <span style="color:var(--text);font-weight:600">${curSymbol}${curPrice}</span> · Rating: <span style="color:var(--yellow);font-weight:600">${target_ai.rating||'—'}</span></div>
+        <div class="target-box">
+          <div class="tp-box bull">
+            <div class="tp-label" style="color:var(--green)">🐂 Bull</div>
+            <div class="tp-price" style="color:var(--green)">${curSymbol}${tp1a_bull}</div>
+            <div class="tp-pct" style="color:var(--green)">${upBull > 0 ? '+' : ''}${upBull}%</div>
+            <div class="tp-prob">${target_ai.probabilita_bull||0}% prob.</div>
+          </div>
+          <div class="tp-box base">
+            <div class="tp-label" style="color:var(--gold)">📊 Base</div>
+            <div class="tp-price" style="color:var(--gold)">${curSymbol}${tp1a_base}</div>
+            <div class="tp-pct" style="color:var(--gold)">${upBase > 0 ? '+' : ''}${upBase}%</div>
+            <div class="tp-prob">${target_ai.probabilita_base||0}% prob.</div>
+          </div>
+          <div class="tp-box bear">
+            <div class="tp-label" style="color:var(--red)">🐻 Bear</div>
+            <div class="tp-price" style="color:var(--red)">${curSymbol}${tp1a_bear}</div>
+            <div class="tp-pct" style="color:var(--red)">${upBear > 0 ? '+' : ''}${upBear}%</div>
+            <div class="tp-prob">${target_ai.probabilita_bear||0}% prob.</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px">
+          <div class="arb-box"><div class="arb-box-label">Target 3a Base</div><div class="arb-box-val" style="font-size:15px;color:var(--gold)">${curSymbol}${target_ai.target_base_3a||'—'}</div></div>
+          <div class="arb-box"><div class="arb-box-label">Upside Base 1a</div><div class="arb-box-val" style="font-size:15px;color:${parseFloat(upBase)>0?'var(--green)':'var(--red)'}">${upBase > 0 ? '+' : ''}${upBase}%</div></div>
+        </div>
+        <div class="analysis-text" style="margin-bottom:12px">${target_ai.analisi}</div>
+        ${target_ai.catalizzatori_rialzo?.length?`<div class="divider"></div><div style="font-size:9px;color:var(--green);margin-bottom:8px">🚀 Catalizzatori rialzo</div>${target_ai.catalizzatori_rialzo.map(c=>`<div style="font-size:11px;color:#8abca0;margin-bottom:4px">• ${c}</div>`).join('')}`:''}
+        ${target_ai.catalizzatori_ribasso?.length?`<div style="margin-top:10px;font-size:9px;color:var(--red);margin-bottom:8px">📉 Catalizzatori ribasso</div>${target_ai.catalizzatori_ribasso.map(c=>`<div style="font-size:11px;color:#bc8a90;margin-bottom:4px">• ${c}</div>`).join('')}`:''}
+        <div class="divider"></div>
+        <div style="font-size:9px;color:var(--yellow);margin-bottom:8px">🔮 Previsioni target price</div>
+        ${forecastBlock(target_ai)}
+      </div>
+    </div>
+
+    <!-- PREVISIONI -->
     <div class="tab-content" id="${uid}_prev">
       <div class="panel">
-        <div class="panel-title pt-a">🔮 Previsioni Multi-Temporali — Arbitro</div>
+        <div class="panel-title pt-a">🔮 Previsioni Multi-Temporali</div>
+        <div style="font-size:9px;color:var(--gold);margin-bottom:8px">⚖️ Verdetto Arbitro</div>
         ${forecastBlock(arb_ai)}
         <div class="divider"></div>
-        <div style="font-size:9px;color:var(--cyan);margin-bottom:8px">📊 Previsioni Tecniche</div>
+        <div style="font-size:9px;color:var(--cyan);margin-bottom:8px">📊 Tecnico</div>
         ${forecastBlock(tech_ai)}
         <div class="divider"></div>
-        <div style="font-size:9px;color:var(--orange);margin-bottom:8px">📈 Previsioni Fondamentali</div>
+        <div style="font-size:9px;color:var(--orange);margin-bottom:8px">📈 Fondamentale</div>
         ${forecastBlock(fund_ai)}
+        <div class="divider"></div>
+        <div style="font-size:9px;color:var(--purple);margin-bottom:8px">🌍 Geopolitico</div>
+        ${forecastBlock(geo_ai)}
+        <div class="divider"></div>
+        <div style="font-size:9px;color:var(--pink);margin-bottom:8px">🏪 Mercato</div>
+        ${forecastBlock(market_ai)}
       </div>
     </div>
 
@@ -614,8 +650,13 @@ function buildCard(ticker, quote, tech, fund, tech_ai, fund_ai, geo_ai, eco_ai, 
           ${tech?.macd?`<span class="tag">MACD: ${tech.macd}</span>`:''}
           ${tech?.sma50?`<span class="tag">SMA50: ${tech.sma50}</span>`:''}
           ${tech?.sma200?`<span class="tag">SMA200: ${tech.sma200}</span>`:''}
+          ${tech?.bb_upper?`<span class="tag">BB+: ${tech.bb_upper}</span>`:''}
+          ${tech?.high52w?`<span class="tag">52wH: ${tech.high52w}</span>`:''}
+          ${tech?.low52w?`<span class="tag">52wL: ${tech.low52w}</span>`:''}
         </div>
         <div class="analysis-text">${tech_ai.analisi}</div>
+        ${tech_ai.punti_forza?.length?`<div class="divider"></div><div style="font-size:9px;color:var(--cyan);margin-bottom:7px">Punti di forza</div>${tech_ai.punti_forza.map(p=>`<div style="font-size:11px;color:#8ab0bc;margin-bottom:4px">+ ${p}</div>`).join('')}`:''}
+        ${tech_ai.punti_debolezza?.length?`<div style="margin-top:10px;font-size:9px;color:var(--orange);margin-bottom:7px">Punti di debolezza</div>${tech_ai.punti_debolezza.map(p=>`<div style="font-size:11px;color:#bc9a80;margin-bottom:4px">- ${p}</div>`).join('')}`:''}
         <div class="divider"></div>
         <div style="font-size:9px;color:var(--cyan);margin-bottom:8px">🔮 Previsioni tecniche</div>
         ${forecastBlock(tech_ai)}
@@ -633,12 +674,13 @@ function buildCard(ticker, quote, tech, fund, tech_ai, fund_ai, geo_ai, eco_ai, 
           <span class="tag">MOAT: ${fund_ai.moat||'—'}</span>
           <span class="tag">${fund_ai.qualita||'—'}</span>
         </div>
+        ${fund?.description?`<div class="analysis-text" style="margin-bottom:12px;font-size:10px;color:var(--dim2)">${fund.description}</div><div class="divider"></div>`:''}
         <div class="analysis-text" style="margin-bottom:12px">${fund_ai.analisi}</div>
         <div class="divider"></div>
         <div style="font-size:9px;color:var(--orange);margin-bottom:10px">📊 Bilanci 5 anni</div>
         ${finHTML}
         <div class="divider"></div>
-        <div style="font-size:9px;color:var(--gold);margin-bottom:10px">💰 Dividendi</div>
+        <div style="font-size:9px;color:var(--gold);margin-bottom:10px">💰 Dividendi storici</div>
         ${divHTML}
         <div class="divider"></div>
         <div style="font-size:9px;color:var(--orange);margin-bottom:8px">🔮 Previsioni fondamentali</div>
@@ -652,12 +694,9 @@ function buildCard(ticker, quote, tech, fund, tech_ai, fund_ai, geo_ai, eco_ai, 
         <div class="panel-title pt-g">🌍 Agente Geopolitico</div>
         <div class="score-row"><span class="score-big sb-g">${geo_ai.score}</span><span class="score-den">/10</span></div>
         <div class="score-bar"><div class="score-fill sf-g" style="width:${geo_ai.score*10}%"></div></div>
-        <div class="tags">
-          <span class="tag">RISCHIO GEO: ${geo_ai.rischio_geopolitico||'—'}</span>
-          <span class="tag">SEGNALE: ${geo_ai.segnale||'—'}</span>
-        </div>
+        <div class="tags"><span class="tag">RISCHIO: ${geo_ai.rischio_geopolitico||'—'}</span><span class="tag">SEGNALE: ${geo_ai.segnale||'—'}</span></div>
         ${geo_ai.aree_rischio?.length?`<div style="font-size:9px;color:var(--red);margin-bottom:6px">⚠️ Aree di rischio</div>${geo_ai.aree_rischio.map(a=>`<div style="font-size:11px;color:#bc8a90;margin-bottom:4px">• ${a}</div>`).join('')}<div class="divider"></div>`:''}
-        ${geo_ai.opportunita_geo?.length?`<div style="font-size:9px;color:var(--green);margin-bottom:6px">✅ Opportunità</div>${geo_ai.opportunita_geo.map(o=>`<div style="font-size:11px;color:#8abca0;margin-bottom:4px">• ${o}</div>`).join('')}<div class="divider"></div>`:''}
+        ${geo_ai.opportunita_geo?.length?`<div style="font-size:9px;color:var(--green);margin-bottom:6px">✅ Opportunità geopolitiche</div>${geo_ai.opportunita_geo.map(o=>`<div style="font-size:11px;color:#8abca0;margin-bottom:4px">• ${o}</div>`).join('')}<div class="divider"></div>`:''}
         <div class="analysis-text">${geo_ai.analisi}</div>
         <div class="divider"></div>
         <div style="font-size:9px;color:var(--purple);margin-bottom:8px">🔮 Previsioni geopolitiche</div>
@@ -673,7 +712,7 @@ function buildCard(ticker, quote, tech, fund, tech_ai, fund_ai, geo_ai, eco_ai, 
         <div class="score-bar"><div class="score-fill sf-e" style="width:${eco_ai.score*10}%"></div></div>
         <div class="tags">
           <span class="tag">VOLATILITÀ: ${eco_ai.volatilita||'—'}</span>
-          <span class="tag">TREND STAT: ${eco_ai.trend_statistico||'—'}</span>
+          <span class="tag">TREND: ${eco_ai.trend_statistico||'—'}</span>
           <span class="tag">MOMENTUM: ${eco_ai.momentum||'—'}</span>
           <span class="tag">MEAN REV: ${eco_ai.mean_reversion||'—'}</span>
         </div>
@@ -693,12 +732,33 @@ function buildCard(ticker, quote, tech, fund, tech_ai, fund_ai, geo_ai, eco_ai, 
         <div class="tags">
           <span class="tag">CICLO: ${(macro_ai.ciclo_economico||'—').replace('_',' ')}</span>
           <span class="tag">TASSI: ${macro_ai.impatto_tassi||'—'}</span>
-          <span class="tag">INFLAZIONE: ${macro_ai.impatto_inflazione||'—'}</span>
+          <span class="tag">INFLAZ: ${macro_ai.impatto_inflazione||'—'}</span>
         </div>
         <div class="analysis-text">${macro_ai.analisi}</div>
         <div class="divider"></div>
         <div style="font-size:9px;color:var(--teal);margin-bottom:8px">🔮 Previsioni macro</div>
         ${forecastBlock(macro_ai)}
+      </div>
+    </div>
+
+    <!-- MERCATO -->
+    <div class="tab-content" id="${uid}_market">
+      <div class="panel">
+        <div class="panel-title pt-mk">🏪 Agente Analisi di Mercato</div>
+        <div class="score-row"><span class="score-big sb-mk">${market_ai.score}</span><span class="score-den">/10</span></div>
+        <div class="score-bar"><div class="score-fill sf-mk" style="width:${market_ai.score*10}%"></div></div>
+        <div class="tags">
+          <span class="tag">POSIZ: ${market_ai.posizionamento||'—'}</span>
+          <span class="tag">QUOTA: ${market_ai.quota_mercato||'—'}</span>
+          <span class="tag">TREND: ${market_ai.trend_settore||'—'}</span>
+          <span class="tag">DISRUPTION: ${market_ai.disruption_risk||'—'}</span>
+          <span class="tag">PRICING: ${market_ai.pricing_power||'—'}</span>
+        </div>
+        ${market_ai.competitor_principali?.length?`<div style="font-size:9px;color:var(--pink);margin-bottom:7px">🏁 Competitor principali</div>${market_ai.competitor_principali.map(c=>`<div style="font-size:11px;color:#c8a0b8;margin-bottom:4px">• ${c}</div>`).join('')}<div class="divider"></div>`:''}
+        <div class="analysis-text">${market_ai.analisi}</div>
+        <div class="divider"></div>
+        <div style="font-size:9px;color:var(--pink);margin-bottom:8px">🔮 Previsioni di mercato</div>
+        ${forecastBlock(market_ai)}
       </div>
     </div>
 
@@ -712,29 +772,112 @@ function buildCard(ticker, quote, tech, fund, tech_ai, fund_ai, geo_ai, eco_ai, 
   </div>`;
 }
 
-// ── ANALYSIS ──
-async function runAnalysis() {
-  const ticker = document.getElementById('analyzeInput').value.trim().toUpperCase();
-  if(!ticker) return;
+// CLARIFY SECTION
+function buildClarifySection(ticker){
+  return `<div class="clarify-section" id="clarify_${ticker.replace('.','_')}">
+    <div class="clarify-header">
+      <span style="font-size:16px">💬</span>
+      <span class="clarify-title">Chiarimenti & Approfondimenti</span>
+    </div>
+    <div class="clarify-messages" id="clarify_msgs_${ticker.replace('.','_')}">
+      <div style="font-size:10px;color:var(--dim2);text-align:center;padding:12px 0">Poni domande sul titolo per approfondire l'analisi.<br>Es: "Quali sono i rischi principali?" · "Come influisce l'AI sul business?" · "È conveniente comprare ora?"</div>
+    </div>
+    <div class="clarify-input-row">
+      <textarea class="clarify-input" id="clarify_input_${ticker.replace('.','_')}" placeholder="Scrivi una domanda sul titolo..." rows="2" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();submitClarify('${ticker}');}"></textarea>
+      <button class="clarify-send" id="clarify_btn_${ticker.replace('.','_')}" onclick="submitClarify('${ticker}')">➤</button>
+    </div>
+  </div>`;
+}
+
+async function submitClarify(ticker){
+  const safeId=ticker.replace('.','_');
+  const input=document.getElementById(`clarify_input_${safeId}`);
+  const btn=document.getElementById(`clarify_btn_${safeId}`);
+  const msgs=document.getElementById(`clarify_msgs_${safeId}`);
+  const question=input.value.trim();
+  if(!question)return;
+
+  input.value='';
+  btn.disabled=true;
+
+  // Add question bubble
+  msgs.innerHTML+=`<div class="clarify-msg"><div class="clarify-msg-q">❓ ${question}</div><div class="clarify-msg-loading" id="loading_${Date.now()}">⟳ Analisi in corso con tutti gli 8 agenti...</div></div>`;
+  msgs.scrollTop=msgs.scrollHeight;
+
+  try{
+    const r=await fetch(`/clarify/${ticker}`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({question,history_qa:currentHistoryQA,prev_analysis:currentAnalysis})
+    });
+    const d=await r.json();
+
+    // Remove loading
+    const loadingEl=msgs.querySelector('[id^="loading_"]');
+    if(loadingEl)loadingEl.remove();
+
+    if(!d.relevant){
+      msgs.querySelector('.clarify-msg:last-child').innerHTML+=`<div class="clarify-msg-a" style="color:var(--gold)">⚠️ ${d.message}</div>`;
+    } else {
+      msgs.querySelector('.clarify-msg:last-child').innerHTML+=`<div class="clarify-msg-a">${d.answer}</div>`;
+      currentHistoryQA.push({q:question,a:d.answer});
+      // Aggiorna analisi con nuovi dati
+      currentAnalysis=d;
+      updateCardFromClarify(ticker,d);
+    }
+  }catch(e){
+    const loadingEl=msgs.querySelector('[id^="loading_"]');
+    if(loadingEl)loadingEl.textContent=`⚠ Errore: ${e.message}`;
+  }finally{
+    btn.disabled=false;
+    msgs.scrollTop=msgs.scrollHeight;
+  }
+}
+
+function updateCardFromClarify(ticker,d){
+  // Aggiorna il verdetto visibile
+  const area=document.getElementById('resultsArea');
+  if(!area)return;
+  const card=area.querySelector('.r-card');
+  if(!card)return;
+  const uid=card.id;
+  // Aggiorna score e verdetto
+  const verdictEl=card.querySelector('.r-verdict');
+  if(verdictEl){
+    const vc=getVC(d.arb_ai.verdetto);
+    verdictEl.className=`r-verdict ${vc}`;
+    verdictEl.textContent=d.arb_ai.verdetto;
+  }
+  toast('✓ Analisi aggiornata con la tua domanda','var(--green)');
+}
+
+// MAIN ANALYSIS
+async function runAnalysis(){
+  const ticker=document.getElementById('analyzeInput').value.trim().toUpperCase();
+  if(!ticker)return;
+  currentTicker=ticker;
+  currentHistoryQA=[];
+  currentAnalysis=null;
+
   const btn=document.getElementById('goBtn');
   const track=document.getElementById('agentTrack');
   const area=document.getElementById('resultsArea');
-  btn.disabled=true; btn.textContent='⟳';
-  track.classList.add('show'); area.innerHTML='';
-  ['t','f','g','e','m','a'].forEach(id=>setPill(id,'','⏳'));
+  btn.disabled=true;btn.textContent='⟳';
+  track.classList.add('show');area.innerHTML='';
+  ['t','f','g','e','m','mk','tp','a'].forEach(id=>setPill(id,'','⏳'));
+  setPill('t','run-t','Analisi...');setPill('f','run-f','In coda...');setPill('g','run-g','In coda...');
+  setPill('e','run-e','In coda...');setPill('m','run-m','In coda...');setPill('mk','run-mk','In coda...');
+  setPill('tp','run-tp','In coda...');setPill('a','run-a','In coda...');
 
-  try {
-    setPill('t','run-t','Analisi...');setPill('f','run-f','In coda...');setPill('g','run-g','In coda...');
-    setPill('e','run-e','In coda...');setPill('m','run-m','In coda...');setPill('a','run-a','In coda...');
-
-    const r = await fetch(`/analyze/${ticker}`);
-    const d = await r.json();
-    if(d.error) throw new Error(d.error);
-
-    ['t','f','g','e','m','a'].forEach(id=>setPill(id,'done-p','✓'));
-
-    const {quote,tech,fund,tech_ai,fund_ai,geo_ai,eco_ai,macro_ai,arb_ai,history} = d;
-    area.innerHTML = buildCard(ticker,quote,tech,fund,tech_ai,fund_ai,geo_ai,eco_ai,macro_ai,arb_ai,history);
+  try{
+    const r=await fetch(`/analyze/${ticker}`);
+    const d=await r.json();
+    if(d.error)throw new Error(d.error);
+    currentAnalysis=d;
+    ['t','f','g','e','m','mk','tp','a'].forEach(id=>setPill(id,'done-p','✓'));
+    const {quote,tech,fund,tech_ai,fund_ai,geo_ai,eco_ai,macro_ai,market_ai,target_ai,arb_ai,history}=d;
+    area.innerHTML=buildCard(ticker,quote,tech,fund,tech_ai,fund_ai,geo_ai,eco_ai,macro_ai,market_ai,target_ai,arb_ai,history);
+    area.innerHTML+=buildClarifySection(ticker);
 
     setTimeout(()=>{
       if(history&&history.length){
@@ -744,17 +887,17 @@ async function runAnalysis() {
       }
     },100);
 
-    const rec={ticker,date:new Date().toLocaleDateString('it-IT'),verdetto:arb_ai.verdetto,score:arb_ai.score_finale,price:quote?.price||'—',confidenza:arb_ai.confidenza};
+    const rec={ticker,date:new Date().toLocaleDateString('it-IT'),verdetto:arb_ai.verdetto,score:arb_ai.score_finale,price:quote?.price?`${quote.currency==='EUR'?'€':'$'}${quote.price}`:'—',confidenza:arb_ai.confidenza};
     savedAnalyses[ticker]=rec;
     historyArr=[rec,...historyArr.filter(h=>h.ticker!==ticker)].slice(0,30);
     persist();
 
-  } catch(e) {
+  }catch(e){
     console.error(e);
-    area.innerHTML=`<div class="error-box">⚠ Errore: ${e.message}<br><br>• Attendi 1 minuto se server in avvio<br>• Verifica che il ticker sia valido</div>`;
-    ['t','f','g','e','m','a'].forEach(id=>setPill(id,'','✗'));
-  } finally {
-    btn.disabled=false; btn.textContent='▶ GO';
+    area.innerHTML=`<div class="error-box">⚠ Errore: ${e.message}<br><br>• Attendi 1 minuto se server in avvio<br>• Verifica che il ticker sia valido (es: AAPL, ENI.MI)</div>`;
+    ['t','f','g','e','m','mk','tp','a'].forEach(id=>setPill(id,'','✗'));
+  }finally{
+    btn.disabled=false;btn.textContent='▶ GO';
   }
 }
 
