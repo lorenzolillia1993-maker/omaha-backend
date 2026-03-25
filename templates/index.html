@@ -777,13 +777,13 @@ function buildClarifySection(ticker){
   return `<div class="clarify-section" id="clarify_${ticker.replace('.','_')}">
     <div class="clarify-header">
       <span style="font-size:16px">💬</span>
-      <span class="clarify-title">Chiarimenti & Approfondimenti</span>
+      <span class="clarify-title">Approfondisci l'analisi</span>
     </div>
     <div class="clarify-messages" id="clarify_msgs_${ticker.replace('.','_')}">
-      <div style="font-size:10px;color:var(--dim2);text-align:center;padding:12px 0">Poni domande sul titolo per approfondire l'analisi.<br>Es: "Quali sono i rischi principali?" · "Come influisce l'AI sul business?" · "È conveniente comprare ora?"</div>
+      <div style="font-size:10px;color:var(--dim2);text-align:center;padding:12px 0">Poni qualsiasi domanda per approfondire.<br>L'analisi completa verrà rieseguita integrando la tua domanda.</div>
     </div>
     <div class="clarify-input-row">
-      <textarea class="clarify-input" id="clarify_input_${ticker.replace('.','_')}" placeholder="Scrivi una domanda sul titolo..." rows="2" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();submitClarify('${ticker}');}"></textarea>
+      <textarea class="clarify-input" id="clarify_input_${ticker.replace('.','_')}" placeholder="Es: Quali sono i rischi? Come influisce l'AI sul business? È il momento giusto per comprare?" rows="2" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();submitClarify('${ticker}');}"></textarea>
       <button class="clarify-send" id="clarify_btn_${ticker.replace('.','_')}" onclick="submitClarify('${ticker}')">➤</button>
     </div>
   </div>`;
@@ -800,56 +800,73 @@ async function submitClarify(ticker){
   input.value='';
   btn.disabled=true;
 
-  // Add question bubble
-  msgs.innerHTML+=`<div class="clarify-msg"><div class="clarify-msg-q">❓ ${question}</div><div class="clarify-msg-loading" id="loading_${Date.now()}">⟳ Analisi in corso con tutti gli 8 agenti...</div></div>`;
+  // Mostra solo la domanda + stato caricamento
+  const msgId=`msg_${Date.now()}`;
+  msgs.innerHTML+=`<div class="clarify-msg" id="${msgId}">
+    <div class="clarify-msg-q">❓ ${question}</div>
+    <div class="clarify-msg-loading">⟳ Riesecuzione analisi completa con tutti gli 8 agenti...</div>
+  </div>`;
   msgs.scrollTop=msgs.scrollHeight;
+
+  // Salva domanda nello storico
+  currentHistoryQA.push(question);
 
   try{
     const r=await fetch(`/clarify/${ticker}`,{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({question,history_qa:currentHistoryQA,prev_analysis:currentAnalysis})
+      body:JSON.stringify({question, history_qa: currentHistoryQA})
     });
     const d=await r.json();
+    if(d.error) throw new Error(d.error);
 
-    // Remove loading
-    const loadingEl=msgs.querySelector('[id^="loading_"]');
-    if(loadingEl)loadingEl.remove();
-
-    if(!d.relevant){
-      msgs.querySelector('.clarify-msg:last-child').innerHTML+=`<div class="clarify-msg-a" style="color:var(--gold)">⚠️ ${d.message}</div>`;
-    } else {
-      msgs.querySelector('.clarify-msg:last-child').innerHTML+=`<div class="clarify-msg-a">${d.answer}</div>`;
-      currentHistoryQA.push({q:question,a:d.answer});
-      // Aggiorna analisi con nuovi dati
-      currentAnalysis=d;
-      updateCardFromClarify(ticker,d);
+    // Rimuovi loading, mostra solo conferma
+    const msgEl=document.getElementById(msgId);
+    if(msgEl){
+      msgEl.innerHTML=`<div class="clarify-msg-q">❓ ${question}</div>
+      <div class="clarify-msg-a" style="color:var(--green);font-size:10px">✓ Analisi aggiornata integrando la tua domanda.</div>`;
     }
+
+    // Aggiorna l'intera card con la nuova analisi
+    const area=document.getElementById('resultsArea');
+    const oldCard=area.querySelector('.r-card');
+    const oldClarify=area.querySelector('.clarify-section');
+    const uid=oldCard?.id;
+
+    const {quote,tech,fund,tech_ai,fund_ai,geo_ai,eco_ai,macro_ai,market_ai,target_ai,arb_ai,history}=d;
+    const newCardHTML=buildCard(ticker,quote,tech,fund,tech_ai,fund_ai,geo_ai,eco_ai,macro_ai,market_ai,target_ai,arb_ai,history);
+
+    if(oldCard) oldCard.outerHTML=newCardHTML;
+
+    // Ridisegna grafico
+    setTimeout(()=>{
+      if(history&&history.length){
+        const newCard=area.querySelector('.r-card');
+        if(newCard){const c=document.getElementById(`cv_${newCard.id}`);if(c){c._prices=history;drawChart(`cv_${newCard.id}`,history);}}
+      }
+    },100);
+
+    // Mantieni la sezione chiarimenti con i messaggi esistenti
+    const newClarify=area.querySelector('.clarify-section');
+    if(newClarify && oldClarify){
+      newClarify.querySelector('.clarify-messages').innerHTML=msgs.innerHTML;
+    }
+
+    currentAnalysis=d;
+    toast('✓ Analisi aggiornata','var(--green)');
+
   }catch(e){
-    const loadingEl=msgs.querySelector('[id^="loading_"]');
-    if(loadingEl)loadingEl.textContent=`⚠ Errore: ${e.message}`;
+    const msgEl=document.getElementById(msgId);
+    if(msgEl) msgEl.querySelector('.clarify-msg-loading').textContent=`⚠ Errore: ${e.message}`;
+    currentHistoryQA.pop();
   }finally{
     btn.disabled=false;
-    msgs.scrollTop=msgs.scrollHeight;
+    const newMsgs=document.getElementById(`clarify_msgs_${safeId}`);
+    if(newMsgs) newMsgs.scrollTop=newMsgs.scrollHeight;
   }
 }
 
-function updateCardFromClarify(ticker,d){
-  // Aggiorna il verdetto visibile
-  const area=document.getElementById('resultsArea');
-  if(!area)return;
-  const card=area.querySelector('.r-card');
-  if(!card)return;
-  const uid=card.id;
-  // Aggiorna score e verdetto
-  const verdictEl=card.querySelector('.r-verdict');
-  if(verdictEl){
-    const vc=getVC(d.arb_ai.verdetto);
-    verdictEl.className=`r-verdict ${vc}`;
-    verdictEl.textContent=d.arb_ai.verdetto;
-  }
-  toast('✓ Analisi aggiornata con la tua domanda','var(--green)');
-}
+function updateCardFromClarify(ticker,d){}
 
 // MAIN ANALYSIS
 async function runAnalysis(){
