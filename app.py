@@ -264,42 +264,23 @@ def clarify(ticker):
         body = request.json
         question = body.get('question', '')
         history_qa = body.get('history_qa', [])
-        prev_analysis = body.get('prev_analysis', {})
 
         if not question.strip():
             return jsonify({"error": "Domanda vuota"}), 400
 
-        # Verifica rilevanza domanda
-        relevance = ask_groq(
-            "Rispondi SOLO con 'SI' o 'NO'.",
-            f"La seguente domanda è inerente all'analisi finanziaria del titolo {ticker}? Domanda: '{question}'"
-        ).strip().upper()
-
-        if 'NO' in relevance:
-            return jsonify({"relevant": False, "message": "La domanda non è inerente all'analisi finanziaria. Poni domande sul titolo, sul settore, sui dati finanziari o sulle previsioni."})
-
         quote, tech, fund, hist = get_market_data(ticker)
 
-        # Costruisci contesto con storico domande
+        # Costruisci contesto con storico domande precedenti
         ctx = ""
         if history_qa:
-            ctx += "DOMANDE E RISPOSTE PRECEDENTI:\n"
-            for qa in history_qa[-3:]:
-                ctx += f"D: {qa['q']}\nR: {qa['a']}\n"
-        ctx += f"\nNUOVA DOMANDA DELL UTENTE: {question}"
+            ctx += "DOMANDE PRECEDENTI DELL UTENTE (tienile in considerazione nell analisi):\n"
+            for qa in history_qa[-5:]:
+                ctx += f"- {qa}\n"
+        ctx += f"\nDOMANDA ATTUALE DELL UTENTE DA INTEGRARE NELL ANALISI: {question}\nAssicurati che le risposte a questa domanda siano integrate in modo approfondito in ogni sezione dell analisi, specialmente nella sintesi finale."
 
         tech_ai, fund_ai, geo_ai, eco_ai, macro_ai, market_ai, target_ai, arb_ai = run_all_agents(ticker, fund, quote, tech, hist, extra_context=ctx)
 
-        # Risposta specifica alla domanda
-        answer = ask_groq(
-            "Sei un analista finanziario senior. Rispondi in modo chiaro e professionale in italiano.",
-            f"Basandoti sull'analisi completa di {ticker} ({fund['name']}), rispondi a questa domanda in modo approfondito (200-300 parole): {question}\n\nContesto analisi: Tech={tech_ai['segnale']} score={tech_ai['score']}, Fund={fund_ai['segnale']} score={fund_ai['score']}, Target_base_1a=${target_ai.get('target_base_1a','N/D')}, Verdetto finale={arb_ai['verdetto']}\n{ctx}",
-            max_tokens=1000
-        )
-
         return jsonify({
-            "relevant": True,
-            "answer": answer,
             "ticker": ticker.upper(),
             "quote": quote, "tech": tech, "fund": fund, "history": hist,
             "tech_ai": tech_ai, "fund_ai": fund_ai, "geo_ai": geo_ai,
